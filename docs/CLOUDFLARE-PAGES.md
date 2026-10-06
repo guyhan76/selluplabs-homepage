@@ -1,5 +1,7 @@
 # Cloudflare Pages 무료 공개
 
+현재 홈페이지는 **Cloudflare Workers**에서 https://selluplabs-homepage.selluplabs.workers.dev/ 주소로 공개되어 있습니다. 기존 GitHub 연결을 통한 업데이트를 사용하면 되며 Pages로 이전할 필요는 없습니다. 아래 내용은 별도 Pages 프로젝트를 새로 만드는 경우의 참고 안내입니다.
+
 이 홈페이지는 정적 사이트입니다. 별도 서버나 데이터베이스 없이 Cloudflare Pages에 배포할 수 있습니다. Cloudflare가 제공하는 `pages.dev` 주소를 사용하면 별도 도메인을 구매하지 않아도 됩니다. 직접 구입한 도메인은 나중에 연결할 수 있습니다.
 
 ## GitHub 연결
@@ -30,7 +32,7 @@
 
 Cloudflare Pages에는 정적 사이트용 무료 플랜이 있습니다. 무료 플랜의 사용량 제한과 현재 조건은 Cloudflare 공식 안내를 확인하세요. 유료 플랜, 도메인 구입, 추가 유료 서비스는 이 홈페이지를 처음 공개하는 데 필수 조건이 아닙니다.
 
-현재 정적 빌드는 149개 파일이며 최대 파일 크기는 약 2.54 MB입니다. 사용자가 제공한 생성 이미지 13장은 원본 그대로 포함되어 있습니다.
+사용자가 제공한 생성 이미지 13장은 원본 그대로 포함되어 있습니다. 각 원본 이미지 파일은 3 MB 미만입니다.
 
 문의 양식은 방문자의 이메일 앱을 엽니다. 방문자가 이메일 앱에서 직접 보내기를 눌러야 하며, 홈페이지 서버가 자동으로 메일을 보내지는 않습니다.
 
@@ -39,6 +41,6 @@ Cloudflare Pages에는 정적 사이트용 무료 플랜이 있습니다. 무료
 - [PC 전체 화면](previews/desktop.png)
 - [모바일 전체 화면](previews/mobile.png)
 
-이 화면들은 현재 구현한 홈페이지의 캡처입니다. 실제 공개 주소는 Cloudflare 배포가 성공한 뒤 생성됩니다. Codex의 환경 저장·게시와 Cloudflare의 홈페이지 배포는 서로 별개입니다.
+이 화면들은 현재 구현한 홈페이지의 캡처입니다. 새 Pages 프로젝트의 주소는 해당 배포가 성공한 뒤 생성됩니다. Codex의 환경 저장·게시와 Cloudflare의 홈페이지 배포는 서로 별개입니다.
 
 공식 안내: https://developers.cloudflare.com/pages/get-started/git-integration/

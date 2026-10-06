@@ -1,356 +1,67 @@
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
 import {
   ArrowDown,
-  ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
   Check,
-  CheckCheck,
-  ChevronDown,
-  Copy,
-  FileCheck2,
-  Fingerprint,
-  FlaskConical,
-  Layers3,
-  Mail,
   Menu,
-  MoveUpRight,
   Plus,
-  ScanLine,
-  Smartphone,
-  Sparkles,
   X,
 } from "lucide-react";
 import { company } from "./config";
-import { HeroArtwork } from "./Packaging";
+import { ContactDialog, AppPreview } from "./Dialogs";
 import { GeneratedShowcase } from "./GeneratedShowcase";
 
-const navItems = [
-  { label: "회사 소개", href: "#about" },
+const navigation = [
   { label: "서비스", href: "#service" },
-  { label: "기술과 연구", href: "#technology" },
+  { label: "생성 사례", href: "#cases" },
+  { label: "기술", href: "#technology" },
+  { label: "회사 소개", href: "#about" },
 ];
-
-function Brand({ inverse = false }: { inverse?: boolean }) {
+const faqs = [
+  {
+    question: "aiadcast는 어떤 서비스를 제공하나요?",
+    answer:
+      "상품 규격과 참조 이미지를 결합해 상품 이미지, 홍보 문구, 회사 정보가 포함된 마케팅 이미지를 생성하는 모바일 서비스입니다. 박스, 쇼핑백, 스티커·라벨, 비닐·파우치, 용기 등 포장재에 특화되어 있으며 다른 제품에 적용한 생성 사례도 확인하실 수 있습니다.",
+  },
+  {
+    question: "어떤 정보를 준비하면 되나요?",
+    answer:
+      "상품명, 회사명, 연락처, 이메일 또는 홈페이지 주소, 상품 카테고리, 규격, 상세 설명과 참조 이미지 최대 10장을 준비해주세요. 앱의 안내에 따라 정보를 입력하고 원하는 이미지 비율을 선택하면 됩니다.",
+  },
+  {
+    question: "릴스 영상도 만들어주나요?",
+    answer:
+      "현재 제공하는 결과물은 9:16 카드뉴스·원페이지 릴스용 이미지와 2:3 홍보 포스터 이미지입니다. 동영상 자동 생성 기능을 의미하지 않습니다. 생성 이미지와 함께 제작 의도, 추천 매체, 검색 키워드를 확인할 수 있습니다.",
+  },
+  {
+    question: "서비스는 어디에서 이용할 수 있나요?",
+    answer:
+      "Google Play에서 aiadcast 앱을 설치해 이용할 수 있습니다. 홈페이지의 ‘Google Play에서 시작하기’ 버튼이 공식 앱 페이지로 연결됩니다. 서비스 도입과 비즈니스·기술 협력은 selluplabs@gmail.com으로 문의해주세요.",
+  },
+];
+function Brand() {
   return (
-    <span className={`brand ${inverse ? "brand-inverse" : ""}`}>
-      <img src="/favicon.svg" width="34" height="34" alt="" />
+    <span className="brand">
+      <img src="/favicon.svg" width="32" height="32" alt="" />
       <span>
-        sell<span className="brand-up">up</span>
-        <span className="brand-labs">labs</span>
+        sell<span className="brand-up">up</span>labs
         <span className="brand-period">.</span>
       </span>
     </span>
   );
 }
-
-function SectionLabel({
-  number,
-  children,
-  light = false,
-}: {
-  number: string;
-  children: ReactNode;
-  light?: boolean;
-}) {
+function AiadcastMark({ className = "" }: { className?: string }) {
   return (
-    <div className={`section-label ${light ? "label-light" : ""}`}>
-      <span className="section-dot" />
-      <span>{children}</span>
-      <span className="section-number">{number}</span>
-    </div>
+    <span className={`aiadcast-mark ${className}`} aria-label="aiadcast">
+      <span>ai</span>adcast
+      <i aria-hidden="true" />
+    </span>
   );
 }
-
-function Reveal({
-  children,
-  className = "",
-  id,
-}: {
-  children: ReactNode;
-  className?: string;
-  id?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const target = ref.current;
-    if (!target) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          target.classList.add("is-visible");
-          observer.unobserve(target);
-        }
-      },
-      { threshold: 0.08 },
-    );
-    target.classList.add("reveal-ready");
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-  return (
-    <div ref={ref} className={`reveal ${className}`} id={id}>
-      {children}
-    </div>
-  );
-}
-
-function ContactDialog({
-  dialogRef,
-}: {
-  dialogRef: React.RefObject<HTMLDialogElement | null>;
-}) {
-  const [status, setStatus] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    type: "서비스 도입 문의",
-    message: "",
-  });
-  const body = `문의 유형: ${form.type}\n이름 / 회사명: ${form.name}\n회신 이메일: ${form.email}\n\n${form.message}`;
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    const href = `mailto:${company.email}?subject=${encodeURIComponent(`[셀업랩스] ${form.type} — ${form.name}`)}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
-    setStatus(
-      "이메일 앱에 문의 내용을 준비했습니다. 이메일 앱에서 보내기를 눌러주세요. 앱이 열리지 않으면 내용을 복사해 아래 주소로 보내실 수 있습니다.",
-    );
-  };
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(
-        `받는 사람: ${company.email}\n제목: [셀업랩스] ${form.type}\n\n${body}`,
-      );
-      setCopied(true);
-      setStatus(
-        "문의 내용을 복사했습니다. 사용하시는 이메일에 붙여넣어 보내주세요.",
-      );
-    } catch {
-      setStatus(
-        "자동 복사가 지원되지 않습니다. 아래 이메일 주소로 직접 문의해주세요.",
-      );
-    }
-  };
-  return (
-    <dialog
-      ref={dialogRef}
-      className="contact-dialog"
-      aria-labelledby="contact-dialog-title"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) dialogRef.current?.close();
-      }}
-      onClose={() => {
-        setStatus("");
-        setCopied(false);
-      }}
-    >
-      <button
-        type="button"
-        className="dialog-close"
-        aria-label="문의 창 닫기"
-        onClick={() => dialogRef.current?.close()}
-      >
-        <X size={23} />
-      </button>
-      <span className="eyebrow">LET’S BUILD THE NEXT.</span>
-      <h2 id="contact-dialog-title">
-        어떤 가능성을
-        <br />
-        함께 만들어볼까요?
-      </h2>
-      <p className="dialog-intro">
-        서비스 도입부터 기술 협력까지,
-        <br />
-        셀업랩스에 당신의 이야기를 들려주세요.
-      </p>
-      <form onSubmit={submit}>
-        <div className="form-row">
-          <label>
-            이름 / 회사명
-            <input
-              required
-              name="name"
-              autoComplete="organization"
-              maxLength={100}
-              value={form.name}
-              placeholder="이름 또는 회사명"
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-          </label>
-          <label>
-            회신 이메일
-            <input
-              required
-              name="email"
-              type="email"
-              autoComplete="email"
-              maxLength={200}
-              value={form.email}
-              placeholder="name@company.com"
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </label>
-        </div>
-        <label>
-          문의 유형
-          <span className="select-wrap">
-            <select
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
-            >
-              <option>서비스 도입 문의</option>
-              <option>비즈니스·기술 협력</option>
-              <option>투자·미디어 문의</option>
-              <option>기타 문의</option>
-            </select>
-            <ChevronDown size={17} />
-          </span>
-        </label>
-        <label>
-          문의 내용
-          <textarea
-            required
-            name="message"
-            rows={4}
-            minLength={5}
-            maxLength={2000}
-            value={form.message}
-            placeholder="관심 있는 서비스나 협업 아이디어를 자유롭게 남겨주세요."
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-          />
-        </label>
-        <p className="form-note">
-          작성 내용은 이 홈페이지에 저장되지 않습니다. 버튼을 누르면 기기의
-          이메일 앱이 열립니다.
-        </p>
-        <div className="form-actions">
-          <button className="button button-dark" type="submit">
-            이메일로 문의하기 <ArrowUpRight size={18} />
-          </button>
-          <button className="copy-button" type="button" onClick={copy}>
-            {copied ? <CheckCheck size={18} /> : <Copy size={18} />} 내용 복사
-          </button>
-        </div>
-        <p className="form-status" role="status">
-          {status}
-        </p>
-      </form>
-      <a className="dialog-email" href={`mailto:${company.email}`}>
-        <Mail size={16} />
-        {company.email}
-      </a>
-    </dialog>
-  );
-}
-
-function AppPreview({
-  dialogRef,
-}: {
-  dialogRef: React.RefObject<HTMLDialogElement | null>;
-}) {
-  return (
-    <dialog
-      ref={dialogRef}
-      className="app-dialog"
-      aria-labelledby="app-dialog-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) dialogRef.current?.close();
-      }}
-    >
-      <button
-        type="button"
-        className="dialog-close"
-        aria-label="앱 소개 닫기"
-        onClick={() => dialogRef.current?.close()}
-      >
-        <X size={23} />
-      </button>
-      <div className="app-dialog-copy">
-        <span className="eyebrow">MEET AIADCAST</span>
-        <h2 id="app-dialog-title">
-          가능성은 이미,
-          <br />
-          손안에 있습니다.
-        </h2>
-        <p>
-          특허 출원 기술을 기반으로 개발한 aiadcast 모바일 앱 MVP입니다. 상품의
-          규격과 참조 이미지를 마케팅 콘텐츠로 연결합니다.
-        </p>
-        <ul>
-          <li>
-            <Check size={17} /> 상품 정보와 참조 이미지 입력
-          </li>
-          <li>
-            <Check size={17} /> 9:16 릴스용 · 2:3 포스터용 이미지
-          </li>
-          <li>
-            <Check size={17} /> 브랜드 정보가 담긴 홍보 콘텐츠
-          </li>
-          <li>
-            <Check size={17} /> 제작 의도 · 추천 매체 · 검색 키워드
-          </li>
-        </ul>
-        {company.appUrl ? (
-          <a
-            className="button button-dark"
-            href={company.appUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Google Play에서 보기 <ArrowUpRight size={18} />
-          </a>
-        ) : (
-          <a
-            className="button button-dark"
-            href={`mailto:${company.email}?subject=${encodeURIComponent("aiadcast 앱 이용 문의")}`}
-          >
-            앱 이용 문의 <ArrowUpRight size={18} />
-          </a>
-        )}
-        <span className="app-screenshot-caption">
-          사업계획서에 수록된 모바일 앱 화면
-        </span>
-      </div>
-      <div className="app-phone">
-        <img
-          src="/images/aiadcast-mvp.jpg"
-          alt="aiadcast 모바일 MVP 홈 화면. Marketing Package와 분석 요청하기 버튼이 표시되어 있습니다."
-          width="992"
-          height="2118"
-        />
-      </div>
-    </dialog>
-  );
-}
-
-const faqs = [
-  {
-    question: "aiadcast는 어떤 서비스를 제공하나요?",
-    answer:
-      "박스, 쇼핑백, 스티커·라벨, 용기 등 포장재에 특화된 AI 마케팅 콘텐츠 생성 서비스입니다. 상품 규격과 참조 이미지를 결합해 상품 이미지, 설명 문구, 회사 정보가 포함된 홍보 이미지를 제작하는 모바일 앱 MVP를 개발했습니다.",
-  },
-  {
-    question: "어떤 정보를 준비하면 되나요?",
-    answer:
-      "상품명, 회사명, 연락처, 이메일 또는 홈페이지 주소, 상품 카테고리, 규격, 상세 설명과 참조 이미지 최대 10장을 준비해주세요. 복잡한 프롬프트 대신 실제 상품 정보를 단계별로 입력하는 방식입니다.",
-  },
-  {
-    question: "릴스 영상도 만들어주나요?",
-    answer:
-      "현재 안내하는 기능은 원페이지 릴스에 활용할 수 있는 9:16 비율의 이미지와 홍보용 포스터에 맞는 2:3 비율의 이미지 생성입니다. 동영상 자동 생성 기능을 의미하지 않습니다.",
-  },
-  {
-    question: "서비스 도입이나 협업은 어떻게 문의하나요?",
-    answer: `서비스 도입, 기술·사업 제휴, 투자 관련 문의는 ${company.email}으로 보내주세요. 아래 ‘문의하기’에서 내용을 작성하면 이메일 앱으로 이어집니다.`,
-  },
-];
-
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const contactRef = useRef<HTMLDialogElement>(null);
   const previewRef = useRef<HTMLDialogElement>(null);
   const openContact = () => {
@@ -358,11 +69,11 @@ export default function App() {
     contactRef.current?.showModal();
   };
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
   }, []);
   return (
     <>
@@ -370,31 +81,31 @@ export default function App() {
         본문으로 바로가기
       </a>
       <header className="site-header">
-        <div className="header-inner">
-          <a href="#home" className="brand-link" aria-label="셀업랩스 홈">
+        <div className="header-inner wrap">
+          <a className="brand-link" href="#home" aria-label="셀업랩스 홈">
             <Brand />
           </a>
           <nav className="desktop-nav" aria-label="주 메뉴">
-            {navItems.map((item) => (
-              <a key={item.href} href={item.href}>
+            {navigation.map((item) => (
+              <a href={item.href} key={item.href}>
                 {item.label}
               </a>
             ))}
           </nav>
           <div className="header-actions">
             <button
-              className="header-contact"
               type="button"
+              className="header-contact"
               onClick={openContact}
             >
-              함께하기 <ArrowUpRight size={16} />
+              문의하기 <ArrowUpRight size={16} />
             </button>
             <button
               className="menu-toggle"
               type="button"
+              aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
-              aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <X /> : <Menu />}
@@ -402,12 +113,12 @@ export default function App() {
           </div>
         </div>
         <nav
+          className="mobile-nav"
           id="mobile-navigation"
-          className={`mobile-nav ${menuOpen ? "is-open" : ""}`}
           aria-label="모바일 메뉴"
-          inert={!menuOpen}
+          hidden={!menuOpen}
         >
-          {navItems.map((item) => (
+          {navigation.map((item) => (
             <a
               key={item.href}
               href={item.href}
@@ -417,446 +128,435 @@ export default function App() {
               <ArrowUpRight size={18} />
             </a>
           ))}
-          <button type="button" onClick={openContact}>
-            문의하기 <ArrowUpRight size={18} />
-          </button>
         </nav>
       </header>
       <main id="main">
-        <section
-          className="hero section-wrap"
-          id="home"
-          aria-labelledby="hero-title"
-        >
-          <div className="hero-topline">
-            <span>
-              <span className="live-dot" /> SMALL BUSINESS. BIG POSSIBILITIES.
-            </span>
-            <span>
-              SEOUL, KOREA <ArrowUpRight size={12} />
-            </span>
-          </div>
-          <div className="hero-main">
+        <section className="hero" id="home" aria-labelledby="hero-title">
+          <div className="wrap hero-grid">
             <div className="hero-copy">
-              <div className="hero-kicker">
-                <span>현장의 경험에 AI의 가능성을 더하다</span>
+              <div className="eyebrow hero-eyebrow">
+                <span className="accent-line" /> AI MARKETING TECHNOLOGY
               </div>
               <h1 id="hero-title">
-                당신의 상품이,
+                상품 정보로 만드는
                 <br />
-                <span className="hero-emphasis">더 큰 세상</span>으로
-                <span className="orange-dot">.</span>
+                <span>AI 마케팅 콘텐츠.</span>
               </h1>
-              <p>
-                좋은 상품의 가치를, 더 많은 사람에게.
-                <br />
-                셀업랩스는 상품을 이해하는 AI 기술로
-                <br />
-                작은 기업의 더 큰 가능성을 만듭니다.
+              <p className="hero-description">
+                셀업랩스는 상품 규격과 이미지를 결합해
+                <br className="desktop-break" /> 마케팅 콘텐츠를 자동 생성하는
+                <br className="desktop-break" /> AI 서비스를 개발·운영합니다.
               </p>
-              <div className="hero-buttons">
-                <a className="button button-dark" href="#service">
-                  aiadcast 만나보기 <ArrowUpRight size={19} />
+              <div className="hero-actions">
+                <a className="button button-white" href="#service">
+                  aiadcast 알아보기 <ArrowUpRight size={18} />
                 </a>
-                <a className="text-button" href="#about">
-                  우리의 이야기 <ArrowRight size={17} />
+                <a className="button button-outline" href="#cases">
+                  실제 생성 사례 <ArrowRight size={18} />
                 </a>
               </div>
-              <div className="hero-proof">
-                <span className="mini-symbol">
-                  s<span>▲</span>
-                </span>
+              <div className="hero-domain">
+                <span /> 포장재 특화 AI · 모바일 서비스
+              </div>
+            </div>
+            <div
+              className="hero-product"
+              aria-label="aiadcast 실제 마케팅 콘텐츠 생성 결과"
+            >
+              <div className="product-window-top">
+                <AiadcastMark />
                 <span>
-                  FROM REAL-WORLD EXPERIENCE
-                  <br />
-                  <strong>포장 산업의 경험, AI 기술로 이어지다.</strong>
+                  GENERATED CONTENTS <span className="status-dot" />
                 </span>
               </div>
+              <div className="hero-results">
+                <a href="#cases" className="hero-result">
+                  <img
+                    src="/images/examples/box-22.png"
+                    width="1008"
+                    height="1792"
+                    alt="aiadcast가 생성한 크라프트 택배박스 홍보 이미지. 상품 규격과 설명 문구가 함께 구성되어 있습니다."
+                    fetchPriority="high"
+                  />
+                  <div>
+                    <span>택배박스</span>
+                    <span>9:16</span>
+                  </div>
+                </a>
+                <a href="#cases" className="hero-result">
+                  <img
+                    src="/images/examples/bag-1.png"
+                    width="1008"
+                    height="1792"
+                    alt="aiadcast가 생성한 오렌지 쇼핑백 홍보 이미지. 제품 특징과 회사 정보가 함께 구성되어 있습니다."
+                  />
+                  <div>
+                    <span>쇼핑백</span>
+                    <span>9:16</span>
+                  </div>
+                </a>
+              </div>
+              <div className="product-window-bottom">
+                <span>
+                  <Check size={13} /> 실제 앱 생성 결과
+                </span>
+                <span>PRODUCT DATA → MARKETING CONTENT</span>
+              </div>
             </div>
-            <HeroArtwork />
           </div>
-          <div className="hero-bottom">
-            <a href="#about">
-              SCROLL TO EXPLORE <ArrowDown size={15} />
+          <div className="hero-base wrap">
+            <a href="#service" className="scroll-link">
+              EXPLORE SELLUPLABS <ArrowDown size={14} />
             </a>
-            <span>We turn product details into brand possibilities.</span>
-            <span>01 — 05</span>
-          </div>
-        </section>
-        <div className="marquee" aria-hidden="true">
-          <div>
-            {[0, 1, 2].map((i) => (
-              <span key={i}>
-                PRODUCT INTELLIGENCE <span>✳</span> CREATIVE POSSIBILITIES{" "}
-                <span>✳</span> REAL BUSINESS IMPACT <span>✳</span>{" "}
-              </span>
-            ))}
-          </div>
-        </div>
-        <section
-          className="about section-wrap section-space"
-          id="about"
-          aria-labelledby="about-title"
-        >
-          <Reveal>
-            <SectionLabel number="01">WHY SELLUPLABS</SectionLabel>
-            <div className="about-top">
-              <h2 id="about-title">
-                좋은 상품은,
-                <br />더 넓은 세상을 만날
-                <br />
-                <span className="muted-text">자격이 있으니까.</span>
-              </h2>
-              <div className="about-story">
-                <span className="about-arrow">
-                  <ArrowDownRight size={58} strokeWidth={1.1} />
-                </span>
-                <p>
-                  좋은 제품을 만들지만, 알리는 일은 어려운 분들이 있습니다. 바쁜
-                  하루에 디자인도, 마케팅도 혼자 해내야 하는 작은 기업들.
-                </p>
-                <p>
-                  셀업랩스는 포장 산업 현장에서 마주한 이 질문에서 시작했습니다.{" "}
-                  <strong>
-                    “상품을 가장 잘 아는 사람이, 가장 쉽게 알릴 수는 없을까?”
-                  </strong>
-                </p>
-                <p>
-                  우리는 현장의 언어를 기술로 바꾸고, 누구나 자신의 상품을 더 잘
-                  알릴 수 있는 내일을 만듭니다.
-                </p>
-              </div>
+            <div className="hero-credentials">
+              <span>특허 1건 출원</span>
+              <span>연구개발전담부서 운영</span>
+              <span>Google Play 서비스</span>
             </div>
-            <div className="about-values">
-              <article>
-                <span className="value-number">
-                  25<span>+</span>
-                </span>
-                <div>
-                  <h3>산업을 이해하는 경험</h3>
-                  <p>대표자의 25년 이상 포장 산업 경험</p>
-                </div>
-                <ArrowUpRight size={21} />
-              </article>
-              <article>
-                <span className="value-icon">
-                  <Fingerprint size={43} strokeWidth={1.2} />
-                </span>
-                <div>
-                  <h3>현장에서 출발한 기술</h3>
-                  <p>상품 규격과 이미지를 결합하는 AI</p>
-                </div>
-                <ArrowUpRight size={21} />
-              </article>
-              <article>
-                <span className="value-icon">
-                  <MoveUpRight size={43} strokeWidth={1.2} />
-                </span>
-                <div>
-                  <h3>작은 기업의 큰 가능성</h3>
-                  <p>마케팅의 진입장벽을 낮추는 서비스</p>
-                </div>
-                <ArrowUpRight size={21} />
-              </article>
-            </div>
-          </Reveal>
+          </div>
         </section>
         <section
           className="service-section section-space"
           id="service"
           aria-labelledby="service-title"
         >
-          <div className="section-wrap">
-            <Reveal>
-              <SectionLabel number="02" light>
-                OUR FIRST ANSWER, AIADCAST
-              </SectionLabel>
-              <div className="service-intro">
-                <div>
-                  <img
-                    className="aiadcast-logo"
-                    src="/images/aiadcast-logo.png"
-                    width="1313"
-                    height="341"
-                    alt="aiadcast"
-                  />
-                  <h2 id="service-title">
-                    상품의 디테일이,
-                    <br />
-                    <span>콘텐츠의 경쟁력으로.</span>
-                  </h2>
-                </div>
-                <div className="service-description">
-                  <span className="service-chip">
-                    <span /> AI MARKETING FOR PACKAGING
-                  </span>
-                  <p>
-                    규격, 소재, 이미지. 당신이 알려준 상품의 정보를
-                    <br className="desktop-break" /> 이해하고 마케팅 콘텐츠로
-                    연결합니다.
-                    <br />
-                    포장재를 위한 AI, aiadcast.
-                  </p>
-                  <div className="service-actions">
-                    <button
-                      className="text-button light-button"
-                      type="button"
-                      onClick={() => previewRef.current?.showModal()}
-                    >
-                      모바일 앱 살펴보기 <ArrowUpRight size={18} />
-                    </button>
-                    <a
-                      className="store-link"
-                      href={company.appUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Smartphone size={15} /> Google Play{" "}
-                      <ArrowUpRight size={14} />
-                    </a>
-                  </div>
+          <div className="wrap">
+            <div className="section-eyebrow">
+              <span>01 — OUR SERVICE</span>
+              <span>PRODUCT INFORMATION. TRANSFORMED.</span>
+            </div>
+            <div className="service-intro">
+              <div>
+                <AiadcastMark className="service-wordmark" />
+                <h2 id="service-title">
+                  포장재를 위한
+                  <br />
+                  AI 마케팅 콘텐츠 서비스.
+                </h2>
+              </div>
+              <div className="service-intro-copy">
+                <p>
+                  제품을 가장 잘 아는 사람의 정보가
+                  <br />
+                  좋은 마케팅 콘텐츠의 출발점이 됩니다.
+                </p>
+                <p>
+                  aiadcast는 상품 규격과 참조 이미지를 바탕으로
+                  <br className="desktop-break" /> 제품 이미지, 홍보 문구, 기업
+                  정보를 하나로 구성합니다.
+                </p>
+                <div className="service-actions">
+                  <a
+                    className="text-link"
+                    href={company.appUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Google Play에서 시작하기 <ArrowUpRight size={17} />
+                  </a>
+                  <button
+                    className="text-link secondary-link"
+                    type="button"
+                    onClick={() => previewRef.current?.showModal()}
+                  >
+                    모바일 앱 살펴보기 <ArrowUpRight size={17} />
+                  </button>
                 </div>
               </div>
-            </Reveal>
-            <Reveal>
-              <GeneratedShowcase />
-            </Reveal>
-            <div className="service-deliverables">
-              <span>하나의 흐름으로 연결되는 마케팅</span>
+            </div>
+            <div className="workflow" aria-label="aiadcast 사용 방법">
+              <article className="workflow-step">
+                <div className="step-top">
+                  <span>01</span>
+                  <span>PRODUCT DATA</span>
+                </div>
+                <h3>상품 정보를 입력합니다.</h3>
+                <p>
+                  상품명과 규격, 소재와 상세 설명.
+                  <br />
+                  기업 정보와 함께 입력합니다.
+                </p>
+                <div className="step-example">
+                  <div>
+                    <span>상품명</span>
+                    <strong>택배박스</strong>
+                  </div>
+                  <div>
+                    <span>규격</span>
+                    <strong>
+                      300 × 200 × 100 <small>mm</small>
+                    </strong>
+                  </div>
+                </div>
+              </article>
+              <article className="workflow-step">
+                <div className="step-top">
+                  <span>02</span>
+                  <span>REFERENCE IMAGES</span>
+                </div>
+                <h3>참조 이미지를 더합니다.</h3>
+                <p>
+                  상품의 형태와 특징을 알 수 있는
+                  <br />
+                  이미지를 최대 10장 업로드합니다.
+                </p>
+                <div className="step-example upload-example">
+                  <span className="upload-line">
+                    <Plus size={20} /> 상품 참조 이미지
+                  </span>
+                  <span className="upload-limit">
+                    최대 <strong>10</strong>장
+                  </span>
+                </div>
+              </article>
+              <article className="workflow-step">
+                <div className="step-top">
+                  <span>03</span>
+                  <span>MARKETING CONTENT</span>
+                </div>
+                <h3>형식을 선택하고 생성합니다.</h3>
+                <p>
+                  카드뉴스·릴스용 이미지 또는 포스터.
+                  <br />
+                  활용 목적에 맞는 비율을 선택합니다.
+                </p>
+                <div className="step-example format-example">
+                  <div>
+                    <span className="format-shape shape-916" />
+                    <span>
+                      <strong>9:16</strong>
+                      <small>카드뉴스·릴스용 이미지</small>
+                    </span>
+                  </div>
+                  <div>
+                    <span className="format-shape shape-23" />
+                    <span>
+                      <strong>2:3</strong>
+                      <small>마케팅 포스터</small>
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div className="service-output">
+              <span>함께 제공되는 콘텐츠</span>
               <div>
-                <span>
-                  <Check size={15} /> 마케팅 이미지
-                </span>
-                <span>
-                  <Check size={15} /> 제작 의도
-                </span>
-                <span>
-                  <Check size={15} /> 추천 매체
-                </span>
-                <span>
-                  <Check size={15} /> 검색 키워드
-                </span>
+                <span>마케팅 이미지</span>
+                <span>제작 의도</span>
+                <span>추천 매체</span>
+                <span>검색 키워드</span>
               </div>
             </div>
           </div>
         </section>
         <section
-          className="process section-wrap section-space"
-          aria-labelledby="process-title"
+          className="cases-section section-space"
+          id="cases"
+          aria-labelledby="cases-title"
         >
-          <Reveal>
-            <SectionLabel number="03">
-              LESS COMPLEXITY. MORE POSSIBILITY.
-            </SectionLabel>
-            <div className="section-title-row">
-              <h2 id="process-title">
-                복잡한 기술은 안으로.
+          <div className="wrap">
+            <div className="section-eyebrow">
+              <span>02 — GENERATED WITH AIADCAST</span>
+              <span>ACTUAL RESULTS</span>
+            </div>
+            <div className="section-heading">
+              <h2 id="cases-title">
+                결과로 확인하는
                 <br />
-                쉬운 경험은 당신에게.
+                AI 콘텐츠 생성.
               </h2>
               <p>
-                프롬프트를 공부하는 대신,
+                박스부터 쇼핑백, 라벨과 용기까지.
                 <br />
-                당신의 상품 이야기에 집중하세요.
+                aiadcast 앱에서 실제 생성한 마케팅 이미지입니다.
               </p>
             </div>
-            <div className="process-grid">
-              <article>
-                <div className="process-top">
-                  <span>01</span>
-                  <ScanLine size={29} strokeWidth={1.3} />
-                </div>
-                <h3>상품을 알려주세요.</h3>
-                <p>
-                  상품명과 카테고리, 규격과 상세 설명.
-                  <br />
-                  회사명과 연락처 등 상품과 브랜드의
-                  <br />
-                  기본 정보를 입력합니다.
-                </p>
-                <div className="step-graphic graphic-input">
-                  <span>상품 규격</span>
-                  <Plus size={15} />
-                  <span>참조 이미지</span>
-                </div>
-              </article>
-              <article>
-                <div className="process-top">
-                  <span>02</span>
-                  <Sparkles size={29} strokeWidth={1.3} />
-                </div>
-                <h3>실제 모습을 더하세요.</h3>
-                <p>
-                  참조 이미지를 최대 10장까지 더해
-                  <br />
-                  AI가 상품의 형태와 특징을
-                  <br />
-                  함께 이해할 수 있도록 합니다.
-                </p>
-                <div className="step-graphic graphic-ai">
-                  <span />
-                  <span />
-                  <div>ai</div>
-                  <span />
-                  <span />
-                </div>
-              </article>
-              <article>
-                <div className="process-top">
-                  <span>03</span>
-                  <Layers3 size={29} strokeWidth={1.3} />
-                </div>
-                <h3>형식을 고르고, 생성.</h3>
-                <p>
-                  9:16 카드뉴스·릴스용 또는 2:3 포스터.
-                  <br />
-                  원하는 형식을 선택해 생성한 뒤,
-                  <br />
-                  이미지와 활용 가이드를 확인합니다.
-                </p>
-                <div className="step-graphic graphic-formats">
-                  <span>9:16</span>
-                  <span>2:3</span>
-                  <ArrowUpRight size={24} />
-                </div>
-              </article>
-            </div>
-          </Reveal>
+            <GeneratedShowcase />
+          </div>
         </section>
         <section
-          className="technology section-space"
+          className="technology-section section-space"
           id="technology"
           aria-labelledby="technology-title"
         >
-          <div className="section-wrap">
-            <Reveal>
-              <SectionLabel number="04">
-                BUILT ON RESEARCH. DRIVEN BY REALITY.
-              </SectionLabel>
-              <div className="section-title-row">
-                <h2 id="technology-title">
-                  가능성을 말하고,
-                  <br />
-                  기술로 증명합니다.
-                </h2>
-                <p>
-                  현장의 문제를 깊이 연구하고,
-                  <br />
-                  실제로 사용할 수 있는 서비스로 만듭니다.
-                </p>
-              </div>
-              <div className="tech-grid">
-                <article className="patent-card">
-                  <div className="tech-card-top">
-                    <span>PATENT PENDING</span>
-                    <FileCheck2 size={23} strokeWidth={1.3} />
-                  </div>
-                  <div className="patent-visual" aria-hidden="true">
-                    <div className="patent-orbit" />
-                    <div className="patent-orbit" />
-                    <div className="patent-core">
-                      <Fingerprint size={76} strokeWidth={0.8} />
-                    </div>
-                    <span className="patent-node node-left">SPEC</span>
-                    <span className="patent-node node-right">IMAGE</span>
-                  </div>
-                  <span className="tech-status">
-                    <span /> 특허 1건 출원
-                  </span>
-                  <h3>
-                    상품을 이해하는
-                    <br />
-                    우리만의 접근.
-                  </h3>
-                  <p>
-                    상품 규격 정보와 상품 이미지를 결합한
-                    <br />
-                    마케팅 콘텐츠 자동 생성 시스템 및 그 방법
-                  </p>
-                  <div className="patent-number">
-                    출원번호 {company.patent}
-                    <span>2026.08.21</span>
-                  </div>
-                </article>
-                <div className="tech-right">
-                  <article>
-                    <div className="tech-card-top">
-                      <span>RESEARCH & DEVELOPMENT</span>
-                      <FlaskConical size={24} strokeWidth={1.3} />
-                    </div>
-                    <div>
-                      <span className="tech-status">
-                        <span /> 연구개발전담부서 인정 · 운영
-                      </span>
-                      <h3>
-                        더 정확하게.
-                        <br />더 쓸모 있게.
-                      </h3>
-                      <p>
-                        상품 규격의 반영과 포장재 카테고리별
-                        <br />
-                        콘텐츠 품질 고도화를 연구합니다.
-                      </p>
-                    </div>
-                    <span className="tech-large-word" aria-hidden="true">
-                      R&D
-                    </span>
-                  </article>
-                  <article>
-                    <div className="tech-card-top">
-                      <span>FROM TECHNOLOGY TO PRODUCT</span>
-                      <Smartphone size={24} strokeWidth={1.3} />
-                    </div>
-                    <div>
-                      <span className="tech-status">
-                        <span /> 모바일 앱 MVP 개발
-                      </span>
-                      <h3>
-                        아이디어를 넘어,
-                        <br />
-                        손안의 서비스로.
-                      </h3>
-                      <button
-                        className="text-button"
-                        type="button"
-                        onClick={() => previewRef.current?.showModal()}
-                      >
-                        aiadcast 앱 살펴보기 <ArrowUpRight size={17} />
-                      </button>
-                    </div>
-                    <span className="tech-large-word" aria-hidden="true">
-                      MVP
-                    </span>
-                  </article>
+          <div className="wrap">
+            <div className="section-eyebrow">
+              <span>03 — OUR TECHNOLOGY</span>
+              <span>BUILT ON PRODUCT INTELLIGENCE</span>
+            </div>
+            <div className="section-heading">
+              <h2 id="technology-title">
+                상품의 규격과 이미지.
+                <br />
+                <span>두 정보를 연결하는 기술.</span>
+              </h2>
+              <p>
+                상품을 표현하는 데 필요한 구체적인 정보를
+                <br />
+                마케팅 콘텐츠 생성의 기준으로 활용합니다.
+              </p>
+            </div>
+            <div
+              className="technology-flow"
+              aria-label="상품 규격과 이미지 결합 기반 콘텐츠 생성 기술"
+            >
+              <div className="tech-inputs">
+                <div className="tech-input">
+                  <span>01 / SPECIFICATION</span>
+                  <strong>상품 규격 정보</strong>
+                  <p>카테고리 · 크기 · 소재 · 특징</p>
+                </div>
+                <div className="tech-input">
+                  <span>02 / REFERENCE</span>
+                  <strong>상품 이미지</strong>
+                  <p>형태 · 디테일 · 시각적 특징</p>
                 </div>
               </div>
-            </Reveal>
+              <div className="tech-connector" aria-hidden="true">
+                <span />
+                <ArrowRight size={20} />
+              </div>
+              <div className="tech-engine">
+                <span className="engine-label">SELLUPLABS TECHNOLOGY</span>
+                <span className="engine-word">
+                  ai<span>adcast</span>
+                </span>
+                <div>규격 정보 + 상품 이미지 결합</div>
+              </div>
+              <div className="tech-connector" aria-hidden="true">
+                <span />
+                <ArrowRight size={20} />
+              </div>
+              <div className="tech-result">
+                <span>OUTPUT / CONTENT</span>
+                <strong>마케팅 콘텐츠</strong>
+                <p>
+                  상품 이미지 + 설명 문구
+                  <br />+ 기업 정보
+                </p>
+                <div>
+                  <span>9:16</span>
+                  <span>2:3</span>
+                </div>
+              </div>
+            </div>
+            <div className="technology-evidence">
+              <article>
+                <span className="evidence-label">INTELLECTUAL PROPERTY</span>
+                <h3>특허 1건 출원</h3>
+                <p>
+                  상품 규격 정보와 상품 이미지를 결합한
+                  <br />
+                  마케팅 콘텐츠 자동 생성 시스템 및 그 방법
+                </p>
+                <div className="evidence-detail">
+                  출원번호 {company.patent}
+                  <span>2026.08.21</span>
+                </div>
+              </article>
+              <article>
+                <span className="evidence-label">RESEARCH & DEVELOPMENT</span>
+                <h3>연구개발전담부서 운영</h3>
+                <p>
+                  인정받은 연구개발전담부서를 중심으로
+                  <br />
+                  상품 정보 반영과 콘텐츠 품질을 연구합니다.
+                </p>
+                <div className="evidence-detail">
+                  상품 이해 · 생성 품질 고도화
+                </div>
+              </article>
+              <article>
+                <span className="evidence-label">TECHNOLOGY TO PRODUCT</span>
+                <h3>모바일 앱 MVP 개발</h3>
+                <p>
+                  출원 기술을 모바일 서비스로 구현했습니다.
+                  <br />
+                  Google Play에서 aiadcast를 만나보세요.
+                </p>
+                <a
+                  className="evidence-detail"
+                  href={company.appUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  aiadcast 앱 보기 <ArrowUpRight size={16} />
+                </a>
+              </article>
+            </div>
           </div>
         </section>
         <section
-          className="faq section-wrap section-space"
-          aria-labelledby="faq-title"
+          className="about-section section-space"
+          id="about"
+          aria-labelledby="about-title"
         >
-          <Reveal className="faq-layout">
+          <div className="wrap">
+            <div className="section-eyebrow">
+              <span>04 — ABOUT SELLUPLABS</span>
+              <span>FROM INDUSTRY TO TECHNOLOGY</span>
+            </div>
+            <div className="about-grid">
+              <div>
+                <h2 id="about-title">
+                  현장의 이해에서 시작한
+                  <br />
+                  AI 기술 기업, 셀업랩스.
+                </h2>
+                <p>
+                  셀업랩스 주식회사는 AI 마케팅 콘텐츠 생성 서비스를
+                  개발·운영하는 정보통신 기업입니다. 포장 산업에서 쌓은 경험을
+                  바탕으로, 상품의 가치를 쉽게 알릴 수 있는 기술을 만듭니다.
+                </p>
+                <p>
+                  제품의 규격과 소재를 이해하는 것부터 기업의 마케팅을 돕는
+                  것까지. 현장의 필요를 실제로 사용할 수 있는 서비스로
+                  연결합니다.
+                </p>
+              </div>
+              <div className="company-facts">
+                <div className="experience">
+                  <strong>
+                    25<span>+</span>
+                  </strong>
+                  <span>
+                    YEARS OF INDUSTRY EXPERIENCE
+                    <small>대표자의 25년 이상 포장 산업 경험</small>
+                  </span>
+                </div>
+                <dl>
+                  <div>
+                    <dt>기업명</dt>
+                    <dd>
+                      셀업랩스 주식회사 <span>selluplabs</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>사업 분야</dt>
+                    <dd>AI 마케팅 콘텐츠 서비스 개발·운영</dd>
+                  </div>
+                  <div>
+                    <dt>대표 서비스</dt>
+                    <dd>aiadcast</dd>
+                  </div>
+                  <div>
+                    <dt>소재지</dt>
+                    <dd>{company.location}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="faq-section" aria-labelledby="faq-title">
+          <div className="wrap faq-layout">
             <div>
-              <SectionLabel number="05">A LITTLE MORE ABOUT US</SectionLabel>
-              <h2 id="faq-title">
-                궁금한 점이
-                <br />
-                있으신가요?
-              </h2>
-              <a className="text-button" href={`mailto:${company.email}`}>
-                직접 문의하기 <ArrowUpRight size={17} />
-              </a>
+              <span className="eyebrow">FAQ</span>
+              <h2 id="faq-title">자주 묻는 질문</h2>
             </div>
             <div className="faq-list">
               {faqs.map((faq, index) => (
-                <article
-                  className={
-                    openFaq === index ? "faq-item is-open" : "faq-item"
-                  }
-                  key={faq.question}
-                >
+                <article className="faq-item" key={faq.question}>
                   <h3>
                     <button
                       type="button"
@@ -867,11 +567,8 @@ export default function App() {
                         setOpenFaq(openFaq === index ? null : index)
                       }
                     >
-                      <span>
-                        <span className="faq-number">0{index + 1}</span>
-                        {faq.question}
-                      </span>
-                      <Plus size={21} />
+                      {faq.question}
+                      <Plus size={20} />
                     </button>
                   </h3>
                   <div
@@ -885,64 +582,51 @@ export default function App() {
                 </article>
               ))}
             </div>
-          </Reveal>
+          </div>
         </section>
         <section
           className="contact-section"
           id="contact"
           aria-labelledby="contact-title"
         >
-          <div className="section-wrap">
-            <Reveal>
-              <div className="contact-top">
-                <span>GOOD PRODUCTS DESERVE A BIGGER WORLD.</span>
-                <span>
-                  LET’S TALK <ArrowDownRight size={18} />
-                </span>
-              </div>
-              <div className="contact-main">
-                <h2 id="contact-title">
-                  다음 가능성을,
-                  <br />
-                  함께 만듭니다<span>.</span>
-                </h2>
-                <button
-                  className="contact-round"
-                  type="button"
-                  onClick={openContact}
-                  aria-label="셀업랩스 문의하기"
-                >
-                  <ArrowUpRight size={51} strokeWidth={1.2} />
-                  <span>문의하기</span>
-                </button>
-              </div>
-              <div className="contact-bottom">
-                <p>
-                  서비스 도입, 비즈니스 협력, 새로운 아이디어.
-                  <br />
-                  셀업랩스와 함께 시작해보세요.
-                </p>
-                <a href={`mailto:${company.email}`}>
-                  {company.email}
-                  <ArrowUpRight size={21} />
-                </a>
-              </div>
-            </Reveal>
+          <div className="wrap contact-grid">
+            <div>
+              <span className="eyebrow">LET’S WORK TOGETHER</span>
+              <h2 id="contact-title">
+                비즈니스에 필요한 AI,
+                <br />
+                함께 이야기해 보세요.
+              </h2>
+              <p>서비스 도입 · 비즈니스 제휴 · 기술 협력</p>
+            </div>
+            <div className="contact-actions">
+              <button
+                className="button button-white"
+                type="button"
+                onClick={openContact}
+              >
+                서비스·협업 문의 <ArrowUpRight size={19} />
+              </button>
+              <a href={`mailto:${company.email}`}>
+                {company.email}
+                <ArrowUpRight size={15} />
+              </a>
+            </div>
           </div>
         </section>
       </main>
       <footer className="site-footer">
-        <div className="section-wrap">
+        <div className="wrap">
           <div className="footer-top">
             <a href="#home" aria-label="셀업랩스 홈">
-              <Brand inverse />
+              <Brand />
             </a>
-            <span>GLOBAL VENTURE BUILDER</span>
+            <span>AI TECHNOLOGY FOR REAL BUSINESS.</span>
             <a href="#home" className="back-top">
-              BACK TO TOP <ArrowUpRight size={15} />
+              맨 위로 <ArrowUpRight size={15} />
             </a>
           </div>
-          <div className="footer-info">
+          <div className="footer-bottom">
             <div>
               <strong>{company.name}</strong>
               <p>
@@ -954,16 +638,9 @@ export default function App() {
                 <span>정보통신업 · AI 마케팅 콘텐츠 서비스 개발 및 운영</span>
               </p>
             </div>
-            <a href={`mailto:${company.email}`}>
-              {company.email}
-              <ArrowUpRight size={15} />
-            </a>
-          </div>
-          <div className="footer-bottom">
-            <span>
+            <span className="copyright">
               © {new Date().getFullYear()} selluplabs. All rights reserved.
             </span>
-            <span>Built for the next possibility.</span>
           </div>
         </div>
       </footer>

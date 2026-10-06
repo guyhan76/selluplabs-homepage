@@ -1,76 +1,232 @@
-import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Maximize2, Sparkles, X } from 'lucide-react';
-import { generatedCategories } from './generatedExamples';
+import { useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Maximize2,
+  Plus,
+  X,
+} from "lucide-react";
+import { generatedCategories } from "./generatedExamples";
+import type { OutputFormat } from "./generatedExamples";
+
+const examples = [
+  ...generatedCategories.map((category) => ({
+    ...category.examples[0],
+    categoryId: category.id,
+    categoryName: category.name,
+  })),
+  ...generatedCategories.flatMap((category) =>
+    category.examples
+      .slice(1)
+      .map((example) => ({
+        ...example,
+        categoryId: category.id,
+        categoryName: category.name,
+      })),
+  ),
+];
 
 export function GeneratedShowcase() {
-  const [categoryId, setCategoryId] = useState('bag');
-  const [index, setIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [categoryId, setCategoryId] = useState("all");
+  const [format, setFormat] = useState<OutputFormat | "all">("all");
+  const [showAll, setShowAll] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const category = generatedCategories.find(item => item.id === categoryId)!;
-  const current = category.examples[index];
-  const formats = [...new Set(category.examples.map(item => item.format))];
-  const move = (direction: number) => setIndex(previous => (previous + direction + category.examples.length) % category.examples.length);
-  const open = () => {
-    setExpanded(true);
+  const categoryExamples = examples.filter(
+    (example) => categoryId === "all" || example.categoryId === categoryId,
+  );
+  const formats = [
+    ...new Set(categoryExamples.map((example) => example.format)),
+  ];
+  const filtered = categoryExamples.filter(
+    (example) => format === "all" || example.format === format,
+  );
+  const visible =
+    categoryId === "all" && !showAll ? filtered.slice(0, 4) : filtered;
+  const current = activeIndex === null ? null : visible[activeIndex];
+  const move = (direction: number) =>
+    setActiveIndex((previous) =>
+      previous === null
+        ? null
+        : (previous + direction + visible.length) % visible.length,
+    );
+  const open = (index: number) => {
+    setActiveIndex(index);
     dialogRef.current?.showModal();
   };
-  const controls = (inDialog = false) => (
-    <div className="case-navigation">
-      <button type="button" onClick={() => move(-1)} aria-label={inDialog ? '확대 이미지 이전 사례' : '이전 생성 사례'}><ArrowLeft size={18} /></button>
-      <span aria-live="polite" aria-atomic="true">{String(index + 1).padStart(2, '0')} <span>/ {String(category.examples.length).padStart(2, '0')}</span></span>
-      <button type="button" onClick={() => move(1)} aria-label={inDialog ? '확대 이미지 다음 사례' : '다음 생성 사례'}><ArrowRight size={18} /></button>
-    </div>
-  );
-
   return (
-    <div className="real-showcase">
-      <div className="case-toolbar">
-        <div className="case-categories" role="group" aria-label="상품 카테고리 선택">
-          {generatedCategories.map(item => (
-            <button key={item.id} type="button" aria-pressed={categoryId === item.id} onClick={() => { setCategoryId(item.id); setIndex(0); }}>{item.name}</button>
+    <div className="generated-showcase">
+      <div className="gallery-filters">
+        <div
+          className="category-tabs"
+          role="group"
+          aria-label="상품 카테고리 선택"
+        >
+          {[{ id: "all", name: "전체" }, ...generatedCategories].map(
+            (category) => (
+              <button
+                key={category.id}
+                type="button"
+                aria-pressed={categoryId === category.id}
+                onClick={() => {
+                  setCategoryId(category.id);
+                  setFormat("all");
+                  setShowAll(false);
+                }}
+              >
+                {category.name}
+              </button>
+            ),
+          )}
+        </div>
+        <div className="format-tabs" role="group" aria-label="콘텐츠 비율 선택">
+          <button
+            type="button"
+            aria-pressed={format === "all"}
+            onClick={() => {
+              setFormat("all");
+              setShowAll(false);
+            }}
+          >
+            전체 비율
+          </button>
+          {formats.map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-label={value === "9:16" ? "9:16 카드뉴스" : "2:3 포스터"}
+              aria-pressed={format === value}
+              onClick={() => {
+                setFormat(value);
+                setShowAll(false);
+              }}
+            >
+              {value} <span>{value === "9:16" ? "카드뉴스" : "포스터"}</span>
+            </button>
           ))}
         </div>
-        <span className="case-status"><span /> ACTUAL AI OUTPUT</span>
       </div>
-      <div className="case-body">
-        <div className="case-story">
-          <span className="case-eyebrow">GENERATED WITH AIADCAST</span>
-          <h3>{category.headline.split('\n').map(line => <span key={line}>{line}</span>)}</h3>
-          <p>{category.description}</p>
-          <div className="case-features">
-            <span><Check size={15} /> 상품 규격과 특징</span>
-            <span><Check size={15} /> 제품을 설명하는 문구</span>
-            <span><Check size={15} /> 회사 정보와 연락처</span>
-          </div>
-          <div className="case-current">
-            <span className="case-eyebrow">{category.english}</span>
-            <p className="case-title" aria-live="polite">{current.title}</p>
-            {controls()}
-          </div>
-          <span className="case-authentic"><Sparkles size={15} /> 실제 앱에서 생성한 콘텐츠입니다.</span>
-        </div>
-        <div className="case-output">
-          <div className="case-output-top">
-            <span>SELECT A FORMAT</span>
-            <div className="case-formats" role="group" aria-label="콘텐츠 비율 선택">
-              {formats.map(format => <button key={format} type="button" aria-pressed={current.format === format} onClick={() => setIndex(category.examples.findIndex(item => item.format === format))}>{format} <span>{format === '9:16' ? '카드뉴스' : '포스터'}</span></button>)}
+      <div className="gallery-grid" aria-label="실제 생성 이미지 목록">
+        {visible.map((example, index) => (
+          <article className="gallery-card" key={example.src}>
+            <button
+              type="button"
+              className="gallery-image-button"
+              aria-label={`${example.title} 이미지 크게 보기`}
+              onClick={() => open(index)}
+            >
+              <img
+                data-testid="generated-image"
+                src={example.src}
+                width={example.width}
+                height={example.height}
+                alt={example.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="gallery-expand">
+                <Maximize2 size={16} />
+                <span>크게 보기</span>
+              </span>
+            </button>
+            <div className="gallery-card-info">
+              <div>
+                <span>{example.categoryName}</span>
+                <h3>{example.title}</h3>
+              </div>
+              <span className="format-label">{example.format}</span>
             </div>
+          </article>
+        ))}
+      </div>
+      <div className="gallery-bottom">
+        <p>
+          실제 aiadcast 생성 결과 · 이미지 속 상품·가격·연락처는 사례에 포함된
+          내용입니다.
+        </p>
+        <span aria-live="polite" className="gallery-count">
+          {visible.length} / {filtered.length} CASES
+        </span>
+      </div>
+      {categoryId === "all" && filtered.length > 4 && (
+        <button
+          className="gallery-more"
+          type="button"
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll
+            ? "대표 사례만 보기"
+            : `생성 사례 더 보기 (${filtered.length})`}
+          <Plus size={17} className={showAll ? "is-expanded" : ""} />
+        </button>
+      )}
+      <dialog
+        ref={dialogRef}
+        className="case-dialog"
+        aria-labelledby="case-dialog-title"
+        onClose={() => setActiveIndex(null)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) dialogRef.current?.close();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            move(event.key === "ArrowLeft" ? -1 : 1);
+          }
+        }}
+      >
+        <div className="case-dialog-header">
+          <div>
+            <span>AIADCAST · 실제 생성 사례</span>
+            <h2 id="case-dialog-title">{current?.title || "생성 이미지"}</h2>
           </div>
-          <button type="button" className="case-image-button" onClick={open} aria-label={`${current.title} 이미지 크게 보기`}>
-            <img key={current.src} data-testid="generated-image" src={current.src} alt={current.alt} width={current.width} height={current.height} loading="lazy" decoding="async" />
-            <span className="case-enlarge"><Maximize2 size={15} /> 크게 보기</span>
+          <button
+            type="button"
+            aria-label="생성 이미지 닫기"
+            onClick={() => dialogRef.current?.close()}
+            autoFocus
+          >
+            <X size={23} />
           </button>
         </div>
-      </div>
-      <div className="case-note"><span>이미지 속 상품·가격·연락처는 생성 사례에 포함된 내용입니다.</span><span>REAL PRODUCTS. NEW POSSIBILITIES.</span></div>
-      <dialog ref={dialogRef} className="case-dialog" aria-labelledby="case-dialog-title" onClose={() => setExpanded(false)} onClick={event => { if (event.target === event.currentTarget) dialogRef.current?.close(); }} onKeyDown={event => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); move(event.key === 'ArrowLeft' ? -1 : 1); } }}>
-        <div className="case-dialog-header">
-          <div><span>AIADCAST · 실제 생성 사례</span><h2 id="case-dialog-title">{current.title}</h2></div>
-          <button type="button" onClick={() => dialogRef.current?.close()} aria-label="생성 이미지 닫기" autoFocus><X size={23} /></button>
-        </div>
-        {expanded && <img className="case-dialog-image" src={current.src} alt={current.alt} width={current.width} height={current.height} />}
-        <div className="case-dialog-footer">{controls(true)}<a href={current.src} target="_blank" rel="noopener noreferrer">원본 보기 <ArrowUpRight size={16} /></a></div>
+        {current && (
+          <>
+            <img
+              className="case-dialog-image"
+              src={current.src}
+              alt={current.alt}
+              width={current.width}
+              height={current.height}
+            />
+            <div className="case-dialog-footer">
+              <div className="case-navigation">
+                <button
+                  type="button"
+                  aria-label="확대 이미지 이전 사례"
+                  onClick={() => move(-1)}
+                  disabled={visible.length < 2}
+                >
+                  <ArrowLeft size={18} />
+                </button>
+                <span aria-live="polite">
+                  {(activeIndex ?? 0) + 1} <span>/ {visible.length}</span>
+                </span>
+                <button
+                  type="button"
+                  aria-label="확대 이미지 다음 사례"
+                  onClick={() => move(1)}
+                  disabled={visible.length < 2}
+                >
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+              <a href={current.src} target="_blank" rel="noopener noreferrer">
+                원본 보기 <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </>
+        )}
       </dialog>
     </div>
   );
