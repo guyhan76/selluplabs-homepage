@@ -1,3 +1,4 @@
+import { useI18n, translateText } from "./i18n";
 import { useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -22,6 +23,7 @@ const normalize = (value: string) =>
   value.toLowerCase().replace(/[\s·・-]/g, "");
 
 export function GeneratedShowcase() {
+  const { t } = useI18n();
   const [categoryId, setCategoryId] = useState("all");
   const [format, setFormat] = useState<OutputFormat | "all">("all");
   const [query, setQuery] = useState("");
@@ -42,9 +44,9 @@ export function GeneratedShowcase() {
         .trim()
         .split(/\s+/)
         .every((term) =>
-          normalize(`${example.title} ${example.categoryName}`).includes(
-            normalize(term),
-          ),
+          normalize(
+            `${t(example.title)} ${t(example.categoryName)} ${translateText(example.title, "en")} ${translateText(example.categoryName, "en")}`,
+          ).includes(normalize(term)),
         ),
   );
   const visible = filtered.slice(0, limit);
@@ -75,15 +77,15 @@ export function GeneratedShowcase() {
     <div className="generated-showcase">
       <div className="gallery-toolbar">
         <p className="gallery-total">
-          <strong>{totalExamples}</strong> 실제 생성 사례{" "}
-          <span>6개 상품 카테고리</span>
+          <strong>{totalExamples}</strong>
+          {t(" 실제 생성 사례")} <span>{t("6개 상품 카테고리")}</span>
         </p>
         <div className="gallery-search">
           <Search size={17} aria-hidden="true" />
           <input
             type="search"
-            aria-label="상품 검색"
-            placeholder="택배박스, 화장품, 유리 용기 검색"
+            aria-label={t("상품 검색")}
+            placeholder={t("택배박스, 화장품, 유리 용기 검색")}
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -93,7 +95,7 @@ export function GeneratedShowcase() {
           {query && (
             <button
               type="button"
-              aria-label="검색어 지우기"
+              aria-label={t("검색어 지우기")}
               onClick={() => {
                 setQuery("");
                 setLimit(INITIAL_COUNT);
@@ -108,10 +110,10 @@ export function GeneratedShowcase() {
         <div
           className="category-tabs"
           role="group"
-          aria-label="상품 카테고리 선택"
+          aria-label={t("상품 카테고리 선택")}
         >
           {[
-            { id: "all", name: "전체", count: totalExamples },
+            { id: "all", name: t("전체"), count: totalExamples },
             ...generatedCategories.map((category) => ({
               ...category,
               count: category.examples.length,
@@ -120,7 +122,7 @@ export function GeneratedShowcase() {
             <button
               key={category.id}
               type="button"
-              aria-label={category.name}
+              aria-label={t(category.name)}
               aria-pressed={categoryId === category.id}
               onClick={() => {
                 setCategoryId(category.id);
@@ -128,14 +130,18 @@ export function GeneratedShowcase() {
                 setLimit(INITIAL_COUNT);
               }}
             >
-              {category.name}{" "}
+              {t(category.name)}{" "}
               <span aria-hidden="true" className="category-count">
                 {category.count}
               </span>
             </button>
           ))}
         </div>
-        <div className="format-tabs" role="group" aria-label="콘텐츠 비율 선택">
+        <div
+          className="format-tabs"
+          role="group"
+          aria-label={t("콘텐츠 비율 선택")}
+        >
           <button
             type="button"
             aria-pressed={format === "all"}
@@ -144,13 +150,15 @@ export function GeneratedShowcase() {
               setLimit(INITIAL_COUNT);
             }}
           >
-            전체 비율
+            {t("전체 비율")}
           </button>
           {formats.map((value) => (
             <button
               key={value}
               type="button"
-              aria-label={value === "9:16" ? "9:16 카드뉴스" : "2:3 포스터"}
+              aria-label={
+                value === "9:16" ? t("9:16 카드뉴스") : t("2:3 포스터")
+              }
               aria-pressed={format === value}
               onClick={() => {
                 setFormat(value);
@@ -165,14 +173,16 @@ export function GeneratedShowcase() {
       <div
         ref={gridRef}
         className="gallery-grid"
-        aria-label="실제 생성 이미지 목록"
+        aria-label={t("실제 생성 이미지 목록")}
       >
         {visible.map((example, index) => (
           <article className="gallery-card" key={example.id}>
             <button
               type="button"
               className="gallery-image-button"
-              aria-label={`${example.title} 이미지 크게 보기`}
+              aria-label={t("{title} 이미지 크게 보기", {
+                title: t(example.title),
+              })}
               onClick={() => {
                 setActiveIndex(index);
                 dialogRef.current?.showModal();
@@ -184,19 +194,19 @@ export function GeneratedShowcase() {
                 src={example.thumbnail}
                 width={example.width}
                 height={example.height}
-                alt={example.alt}
+                alt={t(example.alt)}
                 loading="lazy"
                 decoding="async"
               />
               <span className="gallery-expand">
                 <Maximize2 size={16} />
-                <span>크게 보기</span>
+                <span>{t("크게 보기")}</span>
               </span>
             </button>
             <div className="gallery-card-info">
               <div>
-                <span>{example.categoryName}</span>
-                <h3>{example.title}</h3>
+                <span>{t(example.categoryName)}</span>
+                <h3>{t(example.title)}</h3>
               </div>
               <span className="format-label">{example.format}</span>
             </div>
@@ -206,17 +216,19 @@ export function GeneratedShowcase() {
       {filtered.length === 0 && (
         <div className="gallery-empty">
           <Search size={28} />
-          <h3>검색 조건에 맞는 사례가 없습니다.</h3>
-          <p>다른 상품명으로 검색하거나 전체 사례를 살펴보세요.</p>
+          <h3>{t("검색 조건에 맞는 사례가 없습니다.")}</h3>
+          <p>{t("다른 상품명으로 검색하거나 전체 사례를 살펴보세요.")}</p>
           <button className="text-link" type="button" onClick={reset}>
-            필터 초기화 <ArrowRight size={17} />
+            {t("필터 초기화 ")}
+            <ArrowRight size={17} />
           </button>
         </div>
       )}
       <div className="gallery-bottom">
         <p>
-          실제 aiadcast 생성 결과 · 이미지 속 상품·가격·연락처는 사례에 포함된
-          내용입니다.
+          {t(
+            "실제 aiadcast 생성 결과 · 이미지 속 상품·가격·연락처는 사례에 포함된 내용입니다.",
+          )}
         </p>
         <span role="status" className="gallery-count">
           {visible.length} / {filtered.length} CASES
@@ -231,15 +243,18 @@ export function GeneratedShowcase() {
                 type="button"
                 onClick={() => expand(limit + PAGE_SIZE)}
               >
-                {Math.min(PAGE_SIZE, filtered.length - visible.length)}개 더
-                보기 <Plus size={17} />
+                {t("{count}개 더 보기", {
+                  count: Math.min(PAGE_SIZE, filtered.length - visible.length),
+                })}{" "}
+                <Plus size={17} />
               </button>
               <button
                 className="gallery-show-all"
                 type="button"
                 onClick={() => expand(filtered.length)}
               >
-                전체 {filtered.length}개 펼치기 <ArrowDownIcon />
+                {t("전체 {count}개 펼치기", { count: filtered.length })}{" "}
+                <ArrowDownIcon />
               </button>
             </>
           ) : (
@@ -256,15 +271,17 @@ export function GeneratedShowcase() {
                 });
               }}
             >
-              대표 사례만 보기 <X size={17} />
+              {t("대표 사례만 보기 ")}
+              <X size={17} />
             </button>
           )}
         </div>
       )}
       <div className="gallery-next">
-        <p>내 상품은 어디에 활용할 수 있을까요?</p>
+        <p>{t("내 상품은 어디에 활용할 수 있을까요?")}</p>
         <a className="text-link" href="#applications">
-          채널별 활용 예시 보기 <ArrowRight size={17} />
+          {t("채널별 활용 예시 보기 ")}
+          <ArrowRight size={17} />
         </a>
       </div>
       <dialog
@@ -284,12 +301,12 @@ export function GeneratedShowcase() {
       >
         <div className="case-dialog-header">
           <div>
-            <span>AIADCAST · 실제 생성 사례</span>
-            <h2 id="case-dialog-title">{current?.title || "생성 이미지"}</h2>
+            <span>{t("AIADCAST · 실제 생성 사례")}</span>
+            <h2 id="case-dialog-title">{t(current?.title || "생성 이미지")}</h2>
           </div>
           <button
             type="button"
-            aria-label="생성 이미지 닫기"
+            aria-label={t("생성 이미지 닫기")}
             onClick={() => dialogRef.current?.close()}
             autoFocus
           >
@@ -301,7 +318,7 @@ export function GeneratedShowcase() {
             <img
               className="case-dialog-image"
               src={current.src}
-              alt={current.alt}
+              alt={t(current.alt)}
               width={current.width}
               height={current.height}
             />
@@ -309,7 +326,7 @@ export function GeneratedShowcase() {
               <div className="case-navigation">
                 <button
                   type="button"
-                  aria-label="확대 이미지 이전 사례"
+                  aria-label={t("확대 이미지 이전 사례")}
                   onClick={() => move(-1)}
                   disabled={filtered.length < 2}
                 >
@@ -320,7 +337,7 @@ export function GeneratedShowcase() {
                 </span>
                 <button
                   type="button"
-                  aria-label="확대 이미지 다음 사례"
+                  aria-label={t("확대 이미지 다음 사례")}
                   onClick={() => move(1)}
                   disabled={filtered.length < 2}
                 >
@@ -328,7 +345,8 @@ export function GeneratedShowcase() {
                 </button>
               </div>
               <a href={current.src} target="_blank" rel="noopener noreferrer">
-                원본 보기 <ArrowUpRight size={16} />
+                {t("원본 보기 ")}
+                <ArrowUpRight size={16} />
               </a>
             </div>
             <a
@@ -337,7 +355,8 @@ export function GeneratedShowcase() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              내 상품도 aiadcast로 만들어보기 <ArrowUpRight size={17} />
+              {t("내 상품도 aiadcast로 만들어보기 ")}
+              <ArrowUpRight size={17} />
             </a>
           </>
         )}

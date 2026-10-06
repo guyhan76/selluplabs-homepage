@@ -1,3 +1,4 @@
+import { useI18n } from "./i18n";
 import { useState } from "react";
 import type { FormEvent, RefObject } from "react";
 import {
@@ -16,18 +17,26 @@ export function ContactDialog({
 }: {
   dialogRef: RefObject<HTMLDialogElement | null>;
 }) {
+  const { t, language } = useI18n();
   const [status, setStatus] = useState("");
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
-    type: "서비스 도입 문의",
+    type: "service",
     message: "",
   });
-  const body = `문의 유형: ${form.type}\n이름 / 회사명: ${form.name}\n회신 이메일: ${form.email}\n\n${form.message}`;
+  const inquiryTypes = {
+    service: "서비스 도입 문의",
+    partnership: "비즈니스·기술 협력",
+    media: "투자·미디어 문의",
+    other: "기타 문의",
+  };
+  const inquiryType = t(inquiryTypes[form.type as keyof typeof inquiryTypes]);
+  const body = `${t("문의 유형")}: ${inquiryType}\n${t("이름 / 회사명")}: ${form.name}\n${t("회신 이메일")}: ${form.email}\n\n${form.message}`;
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const href = `mailto:${company.email}?subject=${encodeURIComponent(`[셀업랩스] ${form.type} — ${form.name}`)}&body=${encodeURIComponent(body)}`;
+    const href = `mailto:${company.email}?subject=${encodeURIComponent(`[${t("셀업랩스")}] ${inquiryType} — ${form.name}`)}&body=${encodeURIComponent(body)}`;
     window.location.href = href;
     setStatus(
       "이메일 앱에 문의 내용을 준비했습니다. 이메일 앱에서 보내기를 눌러주세요. 앱이 열리지 않으면 내용을 복사해 아래 주소로 보내실 수 있습니다.",
@@ -36,7 +45,7 @@ export function ContactDialog({
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(
-        `받는 사람: ${company.email}\n제목: [셀업랩스] ${form.type}\n\n${body}`,
+        `${t("받는 사람")}: ${company.email}\n${t("제목")}: [${t("셀업랩스")}] ${inquiryType}\n\n${body}`,
       );
       setCopied(true);
       setStatus(
@@ -64,34 +73,34 @@ export function ContactDialog({
       <button
         type="button"
         className="dialog-close"
-        aria-label="문의 창 닫기"
+        aria-label={t("문의 창 닫기")}
         onClick={() => dialogRef.current?.close()}
       >
         <X size={23} />
       </button>
       <span className="eyebrow">CONTACT SELLUPLABS</span>
-      <h2 id="contact-dialog-title">서비스 도입·협업 문의</h2>
+      <h2 id="contact-dialog-title">{t("서비스 도입·협업 문의")}</h2>
       <p className="dialog-intro">
-        서비스 도입부터 기술 협력까지,
+        {t("서비스 도입부터 기술 협력까지,")}
         <br />
-        문의 내용을 남겨주세요.
+        {t("문의 내용을 남겨주세요.")}
       </p>
       <form onSubmit={submit}>
         <div className="form-row">
           <label>
-            이름 / 회사명
+            {t("이름 / 회사명")}
             <input
               required
               name="name"
               autoComplete="organization"
               maxLength={100}
               value={form.name}
-              placeholder="이름 또는 회사명"
+              placeholder={t("이름 또는 회사명")}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </label>
           <label>
-            회신 이메일
+            {t("회신 이메일")}
             <input
               required
               name="email"
@@ -105,22 +114,22 @@ export function ContactDialog({
           </label>
         </div>
         <label>
-          문의 유형
+          {t("문의 유형")}
           <span className="select-wrap">
             <select
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
             >
-              <option>서비스 도입 문의</option>
-              <option>비즈니스·기술 협력</option>
-              <option>투자·미디어 문의</option>
-              <option>기타 문의</option>
+              <option value="service">{t("서비스 도입 문의")}</option>
+              <option value="partnership">{t("비즈니스·기술 협력")}</option>
+              <option value="media">{t("투자·미디어 문의")}</option>
+              <option value="other">{t("기타 문의")}</option>
             </select>
             <ChevronDown size={17} />
           </span>
         </label>
         <label>
-          문의 내용
+          {t("문의 내용")}
           <textarea
             required
             name="message"
@@ -128,30 +137,41 @@ export function ContactDialog({
             minLength={5}
             maxLength={2000}
             value={form.message}
-            placeholder="관심 있는 서비스나 협업 아이디어를 자유롭게 남겨주세요."
+            placeholder={t(
+              "관심 있는 서비스나 협업 아이디어를 자유롭게 남겨주세요.",
+            )}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
         </label>
         <p className="form-note">
-          작성 내용은 이 홈페이지에 저장되지 않습니다. 버튼을 누르면 기기의
-          이메일 앱이 열립니다.
+          {t(
+            "작성 내용은 이 홈페이지에 저장되지 않습니다. 버튼을 누르면 기기의 이메일 앱이 열립니다.",
+          )}
         </p>
         <div className="form-actions">
           <button className="button button-dark" type="submit">
-            이메일로 문의하기 <ArrowUpRight size={18} />
+            {t("이메일로 문의하기 ")}
+            <ArrowUpRight size={18} />
           </button>
           <button className="copy-button" type="button" onClick={copy}>
-            {copied ? <CheckCheck size={18} /> : <Copy size={18} />} 내용 복사
+            {copied ? <CheckCheck size={18} /> : <Copy size={18} />}
+            {t(" 내용 복사")}
           </button>
         </div>
         <p className="form-status" role="status">
-          {status}
+          {t(status)}
         </p>
       </form>
       <a className="dialog-email" href={`mailto:${company.email}`}>
         <Mail size={16} />
         {company.email}
       </a>
+      <div className="dialog-contact-details">
+        <a href={company.phoneHref}>{company.phone}</a>
+        <address>
+          {language === "en" ? company.englishLocation : company.location}
+        </address>
+      </div>
     </dialog>
   );
 }
@@ -161,6 +181,7 @@ export function AppPreview({
 }: {
   dialogRef: RefObject<HTMLDialogElement | null>;
 }) {
+  const { t } = useI18n();
   return (
     <dialog
       ref={dialogRef}
@@ -173,30 +194,35 @@ export function AppPreview({
       <button
         type="button"
         className="dialog-close"
-        aria-label="앱 소개 닫기"
+        aria-label={t("앱 소개 닫기")}
         onClick={() => dialogRef.current?.close()}
       >
         <X size={23} />
       </button>
       <div className="app-dialog-copy">
         <span className="eyebrow">MEET AIADCAST</span>
-        <h2 id="app-dialog-title">aiadcast 모바일 앱</h2>
+        <h2 id="app-dialog-title">{t("aiadcast 모바일 앱")}</h2>
         <p>
-          특허 출원 기술을 기반으로 개발한 aiadcast 모바일 앱 MVP입니다. 상품의
-          규격과 참조 이미지를 마케팅 콘텐츠로 연결합니다.
+          {t(
+            "특허 출원 기술을 기반으로 개발한 aiadcast 모바일 앱 MVP입니다. 상품의 규격과 참조 이미지를 마케팅 콘텐츠로 연결합니다.",
+          )}
         </p>
         <ul>
           <li>
-            <Check size={17} /> 상품 정보와 참조 이미지 입력
+            <Check size={17} />
+            {t(" 상품 정보와 참조 이미지 입력")}
           </li>
           <li>
-            <Check size={17} /> 9:16 릴스용 · 2:3 포스터용 이미지
+            <Check size={17} />
+            {t(" 9:16 릴스용 · 2:3 포스터용 이미지")}
           </li>
           <li>
-            <Check size={17} /> 브랜드 정보가 담긴 홍보 콘텐츠
+            <Check size={17} />
+            {t(" 브랜드 정보가 담긴 홍보 콘텐츠")}
           </li>
           <li>
-            <Check size={17} /> 제작 의도 · 추천 매체 · 검색 키워드
+            <Check size={17} />
+            {t(" 제작 의도 · 추천 매체 · 검색 키워드")}
           </li>
         </ul>
         {company.appUrl ? (
@@ -206,24 +232,28 @@ export function AppPreview({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Google Play에서 보기 <ArrowUpRight size={18} />
+            {t("Google Play에서 보기 ")}
+            <ArrowUpRight size={18} />
           </a>
         ) : (
           <a
             className="button button-dark"
-            href={`mailto:${company.email}?subject=${encodeURIComponent("aiadcast 앱 이용 문의")}`}
+            href={`mailto:${company.email}?subject=${encodeURIComponent(t("aiadcast 앱 이용 문의"))}`}
           >
-            앱 이용 문의 <ArrowUpRight size={18} />
+            {t("앱 이용 문의 ")}
+            <ArrowUpRight size={18} />
           </a>
         )}
         <span className="app-screenshot-caption">
-          실제 aiadcast 모바일 앱 화면
+          {t("실제 aiadcast 모바일 앱 화면")}
         </span>
       </div>
       <div className="app-phone">
         <img
           src="/images/aiadcast-mvp.jpg"
-          alt="aiadcast 모바일 MVP 홈 화면. Marketing Package와 분석 요청하기 버튼이 표시되어 있습니다."
+          alt={t(
+            "aiadcast 모바일 MVP 홈 화면. Marketing Package와 분석 요청하기 버튼이 표시되어 있습니다.",
+          )}
           width="992"
           height="2118"
         />

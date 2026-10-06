@@ -4,6 +4,12 @@
 
 공개 주소: https://selluplabs-homepage.selluplabs.workers.dev/
 
+한국어 링크: https://selluplabs-homepage.selluplabs.workers.dev/?lang=ko
+
+영어 링크: https://selluplabs-homepage.selluplabs.workers.dev/?lang=en
+
+상단의 KO / EN 버튼으로 본문, 사례 정보, 활용 예시와 문의창의 언어를 전환합니다. URL의 `lang` 값이 우선하며, 지정하지 않으면 브라우저에 저장한 언어 설정을 사용합니다. 문의창에 입력한 내용과 선택한 사례·활용 채널은 언어를 바꿔도 유지합니다. 실제 앱 생성 이미지와 앱 화면은 제공된 원본 언어로 표시합니다.
+
 블랙·화이트를 중심으로 회사의 사업 설명 → 서비스 사용 과정 → 실제 생성 사례 → 채널별 활용 방법과 이용 이유 → 기술 근거 → 회사 소개 순서로 구성했습니다. 모바일에서는 메뉴, 사례 갤러리, 기술 설명과 문의 화면이 화면 폭에 맞게 재배치됩니다.
 
 ## 실행
@@ -50,7 +56,7 @@ npm test
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test
 ```
 
-PC·모바일 총 26개 테스트로 검증합니다. 검증 항목은 첫 화면의 사업 설명, PC·모바일 화면, 6개 상품 카테고리와 이미지 비율 필터, 72개 사례 검색·단계별 더 보기·전체 펼치기, 6개 활용 채널과 상품 선택, Google Play 설치 링크와 실제 QR 디코딩, 모바일 내비게이션, FAQ, 앱 소개, 문의 양식과 클립보드, 키보드 초점 및 자동 접근성 검사입니다. 화면 폭 320~1920px에서 가로 넘침을 확인합니다. 테스트는 이메일을 발송하거나 결제를 수행하지 않습니다.
+PC·모바일 총 36개 테스트로 검증합니다. 검증 항목은 첫 화면의 사업 설명, PC·모바일 화면, 6개 상품 카테고리와 이미지 비율 필터, 72개 사례 검색·단계별 더 보기·전체 펼치기, 6개 활용 채널과 상품 선택, Google Play 설치 링크와 실제 QR 디코딩, 모바일 내비게이션, FAQ, 앱 소개, 문의 양식과 클립보드, 키보드 초점 및 자동 접근성 검사입니다. 추가로 전체 주소·전화·이메일, 한국어·영어 공유 링크와 언어 설정·브라우저 이력, 영어 검색·활용 예시·FAQ, 영어 문의 내용 복사와 접근성을 검증합니다. 화면 폭 320~1920px에서 가로 넘침을 확인합니다. 테스트는 이메일을 발송하거나 결제를 수행하지 않습니다.
 
 ## 콘텐츠 수정
 
@@ -60,7 +66,9 @@ PC·모바일 총 26개 테스트로 검증합니다. 검증 항목은 첫 화�
 - `src/Dialogs.tsx`: 앱 미리보기 및 이메일 문의 창
 - `src/GeneratedShowcase.tsx`, `src/generatedExamples.ts`: 실제 생성 사례 갤러리와 카테고리별 데이터
 - `src/styles.css`: 브랜드 색상, 레이아웃, 반응형 및 모션 설정
-- `src/config.ts`: 공개 기업 정보, 이메일, Google Play 주소
+- `src/config.ts`: 공개 기업 정보, 한국어·영어 주소, 전화번호, 이메일, Google Play 주소
+- `src/i18n.tsx`, `src/en.json`: 언어 상태·공유 URL·메타데이터와 영어 번역
+- `src/international.css`: 언어 버튼·연락처와 영어 화면 반응형 스타일
 - `public/images/`: 실제 aiadcast 로고, 앱 홈 화면, 실제 생성 이미지 72장과 WebP 미리보기 및 링크 공유용 이미지
 
 문의 이메일은 `selluplabs@gmail.com`, Google Play 패키지는 `kr.co.beehivecorp.aiadcast`입니다. 필요하면 `.env.example`을 참고하여 공개 환경변수 `VITE_CONTACT_EMAIL`, `VITE_APP_URL`로 변경할 수 있습니다. 값은 빌드 시 포함되며 변경 후 다시 빌드해야 합니다. `VITE_` 환경변수에 비밀키를 넣지 마세요.

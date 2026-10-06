@@ -1,9 +1,11 @@
+import { useI18n } from "./i18n";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowRight,
   ArrowUpRight,
   Check,
+  Mail,
   Menu,
   Plus,
   X,
@@ -13,14 +15,14 @@ import { ContactDialog, AppPreview } from "./Dialogs";
 import { GeneratedShowcase } from "./GeneratedShowcase";
 import { Applications, AppInstall } from "./Applications";
 
-const navigation = [
+const navigationCopy = [
   { label: "서비스", href: "#service" },
   { label: "생성 사례", href: "#cases" },
   { label: "활용 방법", href: "#applications" },
   { label: "기술", href: "#technology" },
   { label: "회사 소개", href: "#about" },
 ];
-const faqs = [
+const faqCopy = [
   {
     question: "aiadcast는 어떤 서비스를 제공하나요?",
     answer:
@@ -62,6 +64,11 @@ function AiadcastMark({ className = "" }: { className?: string }) {
   );
 }
 export default function App() {
+  const { t, language, setLanguage, localize } = useI18n();
+  const navigation = localize(navigationCopy);
+  const faqs = localize(faqCopy);
+  const address =
+    language === "en" ? company.englishLocation : company.location;
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const contactRef = useRef<HTMLDialogElement>(null);
@@ -80,14 +87,14 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main">
-        본문으로 바로가기
+        {t("본문으로 바로가기")}
       </a>
       <header className="site-header">
         <div className="header-inner wrap">
-          <a className="brand-link" href="#home" aria-label="셀업랩스 홈">
+          <a className="brand-link" href="#home" aria-label={t("셀업랩스 홈")}>
             <Brand />
           </a>
-          <nav className="desktop-nav" aria-label="주 메뉴">
+          <nav className="desktop-nav" aria-label={t("주 메뉴")}>
             {navigation.map((item) => (
               <a href={item.href} key={item.href}>
                 {item.label}
@@ -95,17 +102,50 @@ export default function App() {
             ))}
           </nav>
           <div className="header-actions">
+            <div
+              className="language-switch"
+              role="group"
+              aria-label={t("언어 선택")}
+            >
+              <button
+                type="button"
+                lang="ko"
+                aria-label="한국어"
+                aria-pressed={language === "ko"}
+                onClick={() => setLanguage("ko")}
+              >
+                KO
+              </button>
+              <span aria-hidden="true">/</span>
+              <button
+                type="button"
+                lang="en"
+                aria-label="English"
+                aria-pressed={language === "en"}
+                onClick={() => setLanguage("en")}
+              >
+                EN
+              </button>
+            </div>
             <button
               type="button"
               className="header-contact"
+              aria-label={t("문의하기")}
+              title={t("문의하기")}
               onClick={openContact}
             >
-              문의하기 <ArrowUpRight size={16} />
+              <span className="header-contact-label">{t("문의하기")}</span>
+              <ArrowUpRight className="header-contact-arrow" size={16} />
+              <Mail
+                className="header-contact-mobile-icon"
+                size={16}
+                aria-hidden="true"
+              />
             </button>
             <button
               className="menu-toggle"
               type="button"
-              aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+              aria-label={menuOpen ? t("메뉴 닫기") : t("메뉴 열기")}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -117,7 +157,7 @@ export default function App() {
         <nav
           className="mobile-nav"
           id="mobile-navigation"
-          aria-label="모바일 메뉴"
+          aria-label={t("모바일 메뉴")}
           hidden={!menuOpen}
         >
           {navigation.map((item) => (
@@ -140,14 +180,16 @@ export default function App() {
                 <span className="accent-line" /> AI MARKETING TECHNOLOGY
               </div>
               <h1 id="hero-title">
-                상품 정보로 만드는
+                {t("상품 정보로 만드는")}
                 <br />
-                <span>AI 마케팅 콘텐츠.</span>
+                <span>{t("AI 마케팅 콘텐츠.")}</span>
               </h1>
               <p className="hero-description">
-                셀업랩스는 상품 규격과 이미지를 결합해
-                <br className="desktop-break" /> 마케팅 콘텐츠를 자동 생성하는
-                <br className="desktop-break" /> AI 서비스를 개발·운영합니다.
+                {t("셀업랩스는 상품 규격과 이미지를 결합해")}
+                <br className="desktop-break" />
+                {t(" 마케팅 콘텐츠를 자동 생성하는")}
+                <br className="desktop-break" />
+                {t(" AI 서비스를 개발·운영합니다.")}
               </p>
               <div className="hero-actions">
                 <a
@@ -156,19 +198,22 @@ export default function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  aiadcast 앱 설치 <ArrowUpRight size={18} />
+                  {t("aiadcast 앱 설치 ")}
+                  <ArrowUpRight size={18} />
                 </a>
                 <a className="button button-outline" href="#cases">
-                  실제 생성 사례 <ArrowRight size={18} />
+                  {t("실제 생성 사례 ")}
+                  <ArrowRight size={18} />
                 </a>
               </div>
               <div className="hero-domain">
-                <span /> 포장재 특화 AI · 모바일 서비스
+                <span />
+                {t(" 포장재 특화 AI · 모바일 서비스")}
               </div>
             </div>
             <div
               className="hero-product"
-              aria-label="aiadcast 실제 마케팅 콘텐츠 생성 결과"
+              aria-label={t("aiadcast 실제 마케팅 콘텐츠 생성 결과")}
             >
               <div className="product-window-top">
                 <AiadcastMark />
@@ -182,11 +227,13 @@ export default function App() {
                     src="/images/examples/previews/box-22.webp"
                     width="1008"
                     height="1792"
-                    alt="aiadcast가 생성한 크라프트 택배박스 홍보 이미지. 상품 규격과 설명 문구가 함께 구성되어 있습니다."
+                    alt={t(
+                      "aiadcast가 생성한 크라프트 택배박스 홍보 이미지. 상품 규격과 설명 문구가 함께 구성되어 있습니다.",
+                    )}
                     fetchPriority="high"
                   />
                   <div>
-                    <span>택배박스</span>
+                    <span>{t("택배박스")}</span>
                     <span>9:16</span>
                   </div>
                 </a>
@@ -195,17 +242,20 @@ export default function App() {
                     src="/images/examples/previews/bag-1.webp"
                     width="1008"
                     height="1792"
-                    alt="aiadcast가 생성한 오렌지 쇼핑백 홍보 이미지. 제품 특징과 회사 정보가 함께 구성되어 있습니다."
+                    alt={t(
+                      "aiadcast가 생성한 오렌지 쇼핑백 홍보 이미지. 제품 특징과 회사 정보가 함께 구성되어 있습니다.",
+                    )}
                   />
                   <div>
-                    <span>쇼핑백</span>
+                    <span>{t("쇼핑백")}</span>
                     <span>9:16</span>
                   </div>
                 </a>
               </div>
               <div className="product-window-bottom">
                 <span>
-                  <Check size={13} /> 실제 앱 생성 결과
+                  <Check size={13} />
+                  {t(" 실제 앱 생성 결과")}
                 </span>
                 <span>PRODUCT DATA → MARKETING CONTENT</span>
               </div>
@@ -216,9 +266,9 @@ export default function App() {
               EXPLORE SELLUPLABS <ArrowDown size={14} />
             </a>
             <div className="hero-credentials">
-              <span>특허 1건 출원</span>
-              <span>연구개발전담부서 운영</span>
-              <span>Google Play 서비스</span>
+              <span>{t("특허 1건 출원")}</span>
+              <span>{t("연구개발전담부서 운영")}</span>
+              <span>{t("Google Play 서비스")}</span>
             </div>
           </div>
         </section>
@@ -236,21 +286,21 @@ export default function App() {
               <div>
                 <AiadcastMark className="service-wordmark" />
                 <h2 id="service-title">
-                  포장재를 위한
+                  {t("포장재를 위한")}
                   <br />
-                  AI 마케팅 콘텐츠 서비스.
+                  {t("AI 마케팅 콘텐츠 서비스.")}
                 </h2>
               </div>
               <div className="service-intro-copy">
                 <p>
-                  제품을 가장 잘 아는 사람의 정보가
+                  {t("제품을 가장 잘 아는 사람의 정보가")}
                   <br />
-                  좋은 마케팅 콘텐츠의 출발점이 됩니다.
+                  {t("좋은 마케팅 콘텐츠의 출발점이 됩니다.")}
                 </p>
                 <p>
-                  aiadcast는 상품 규격과 참조 이미지를 바탕으로
-                  <br className="desktop-break" /> 제품 이미지, 홍보 문구, 기업
-                  정보를 하나로 구성합니다.
+                  {t("aiadcast는 상품 규격과 참조 이미지를 바탕으로")}
+                  <br className="desktop-break" />
+                  {t(" 제품 이미지, 홍보 문구, 기업 정보를 하나로 구성합니다.")}
                 </p>
                 <div className="service-actions">
                   <a
@@ -259,37 +309,39 @@ export default function App() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Google Play에서 시작하기 <ArrowUpRight size={17} />
+                    {t("Google Play에서 시작하기 ")}
+                    <ArrowUpRight size={17} />
                   </a>
                   <button
                     className="text-link secondary-link"
                     type="button"
                     onClick={() => previewRef.current?.showModal()}
                   >
-                    모바일 앱 살펴보기 <ArrowUpRight size={17} />
+                    {t("모바일 앱 살펴보기 ")}
+                    <ArrowUpRight size={17} />
                   </button>
                 </div>
               </div>
             </div>
-            <div className="workflow" aria-label="aiadcast 사용 방법">
+            <div className="workflow" aria-label={t("aiadcast 사용 방법")}>
               <article className="workflow-step">
                 <div className="step-top">
                   <span>01</span>
                   <span>PRODUCT DATA</span>
                 </div>
-                <h3>상품 정보를 입력합니다.</h3>
+                <h3>{t("상품 정보를 입력합니다.")}</h3>
                 <p>
-                  상품명과 규격, 소재와 상세 설명.
+                  {t("상품명과 규격, 소재와 상세 설명.")}
                   <br />
-                  기업 정보와 함께 입력합니다.
+                  {t("기업 정보와 함께 입력합니다.")}
                 </p>
                 <div className="step-example">
                   <div>
-                    <span>상품명</span>
-                    <strong>택배박스</strong>
+                    <span>{t("상품명")}</span>
+                    <strong>{t("택배박스")}</strong>
                   </div>
                   <div>
-                    <span>규격</span>
+                    <span>{t("규격")}</span>
                     <strong>
                       300 × 200 × 100 <small>mm</small>
                     </strong>
@@ -301,18 +353,21 @@ export default function App() {
                   <span>02</span>
                   <span>REFERENCE IMAGES</span>
                 </div>
-                <h3>참조 이미지를 더합니다.</h3>
+                <h3>{t("참조 이미지를 더합니다.")}</h3>
                 <p>
-                  상품의 형태와 특징을 알 수 있는
+                  {t("상품의 형태와 특징을 알 수 있는")}
                   <br />
-                  이미지를 최대 10장 업로드합니다.
+                  {t("이미지를 최대 10장 업로드합니다.")}
                 </p>
                 <div className="step-example upload-example">
                   <span className="upload-line">
-                    <Plus size={20} /> 상품 참조 이미지
+                    <Plus size={20} />
+                    {t(" 상품 참조 이미지")}
                   </span>
                   <span className="upload-limit">
-                    최대 <strong>10</strong>장
+                    {t("최대 ")}
+                    <strong>10</strong>
+                    {t("장")}
                   </span>
                 </div>
               </article>
@@ -321,37 +376,37 @@ export default function App() {
                   <span>03</span>
                   <span>MARKETING CONTENT</span>
                 </div>
-                <h3>형식을 선택하고 생성합니다.</h3>
+                <h3>{t("형식을 선택하고 생성합니다.")}</h3>
                 <p>
-                  카드뉴스·릴스용 이미지 또는 포스터.
+                  {t("카드뉴스·릴스용 이미지 또는 포스터.")}
                   <br />
-                  활용 목적에 맞는 비율을 선택합니다.
+                  {t("활용 목적에 맞는 비율을 선택합니다.")}
                 </p>
                 <div className="step-example format-example">
                   <div>
                     <span className="format-shape shape-916" />
                     <span>
                       <strong>9:16</strong>
-                      <small>카드뉴스·릴스용 이미지</small>
+                      <small>{t("카드뉴스·릴스용 이미지")}</small>
                     </span>
                   </div>
                   <div>
                     <span className="format-shape shape-23" />
                     <span>
                       <strong>2:3</strong>
-                      <small>마케팅 포스터</small>
+                      <small>{t("마케팅 포스터")}</small>
                     </span>
                   </div>
                 </div>
               </article>
             </div>
             <div className="service-output">
-              <span>함께 제공되는 콘텐츠</span>
+              <span>{t("함께 제공되는 콘텐츠")}</span>
               <div>
-                <span>마케팅 이미지</span>
-                <span>제작 의도</span>
-                <span>추천 매체</span>
-                <span>검색 키워드</span>
+                <span>{t("마케팅 이미지")}</span>
+                <span>{t("제작 의도")}</span>
+                <span>{t("추천 매체")}</span>
+                <span>{t("검색 키워드")}</span>
               </div>
             </div>
           </div>
@@ -368,14 +423,14 @@ export default function App() {
             </div>
             <div className="section-heading">
               <h2 id="cases-title">
-                내 상품과 닮은 사례,
+                {t("내 상품과 닮은 사례,")}
                 <br />
-                여기서 찾아보세요.
+                {t("여기서 찾아보세요.")}
               </h2>
               <p>
-                박스부터 쇼핑백, 라벨과 용기까지.
+                {t("박스부터 쇼핑백, 라벨과 용기까지.")}
                 <br />
-                aiadcast 앱에서 실제 생성한 마케팅 이미지입니다.
+                {t("aiadcast 앱에서 실제 생성한 마케팅 이미지입니다.")}
               </p>
             </div>
             <GeneratedShowcase />
@@ -394,30 +449,30 @@ export default function App() {
             </div>
             <div className="section-heading">
               <h2 id="technology-title">
-                상품의 규격과 이미지.
+                {t("상품의 규격과 이미지.")}
                 <br />
-                <span>두 정보를 연결하는 기술.</span>
+                <span>{t("두 정보를 연결하는 기술.")}</span>
               </h2>
               <p>
-                상품을 표현하는 데 필요한 구체적인 정보를
+                {t("상품을 표현하는 데 필요한 구체적인 정보를")}
                 <br />
-                마케팅 콘텐츠 생성의 기준으로 활용합니다.
+                {t("마케팅 콘텐츠 생성의 기준으로 활용합니다.")}
               </p>
             </div>
             <div
               className="technology-flow"
-              aria-label="상품 규격과 이미지 결합 기반 콘텐츠 생성 기술"
+              aria-label={t("상품 규격과 이미지 결합 기반 콘텐츠 생성 기술")}
             >
               <div className="tech-inputs">
                 <div className="tech-input">
                   <span>01 / SPECIFICATION</span>
-                  <strong>상품 규격 정보</strong>
-                  <p>카테고리 · 크기 · 소재 · 특징</p>
+                  <strong>{t("상품 규격 정보")}</strong>
+                  <p>{t("카테고리 · 크기 · 소재 · 특징")}</p>
                 </div>
                 <div className="tech-input">
                   <span>02 / REFERENCE</span>
-                  <strong>상품 이미지</strong>
-                  <p>형태 · 디테일 · 시각적 특징</p>
+                  <strong>{t("상품 이미지")}</strong>
+                  <p>{t("형태 · 디테일 · 시각적 특징")}</p>
                 </div>
               </div>
               <div className="tech-connector" aria-hidden="true">
@@ -429,7 +484,7 @@ export default function App() {
                 <span className="engine-word">
                   ai<span>adcast</span>
                 </span>
-                <div>규격 정보 + 상품 이미지 결합</div>
+                <div>{t("규격 정보 + 상품 이미지 결합")}</div>
               </div>
               <div className="tech-connector" aria-hidden="true">
                 <span />
@@ -437,10 +492,11 @@ export default function App() {
               </div>
               <div className="tech-result">
                 <span>OUTPUT / CONTENT</span>
-                <strong>마케팅 콘텐츠</strong>
+                <strong>{t("마케팅 콘텐츠")}</strong>
                 <p>
-                  상품 이미지 + 설명 문구
-                  <br />+ 기업 정보
+                  {t("상품 이미지 + 설명 문구")}
+                  <br />
+                  {t("+ 기업 정보")}
                 </p>
                 <div>
                   <span>9:16</span>
@@ -451,36 +507,37 @@ export default function App() {
             <div className="technology-evidence">
               <article>
                 <span className="evidence-label">INTELLECTUAL PROPERTY</span>
-                <h3>특허 1건 출원</h3>
+                <h3>{t("특허 1건 출원")}</h3>
                 <p>
-                  상품 규격 정보와 상품 이미지를 결합한
+                  {t("상품 규격 정보와 상품 이미지를 결합한")}
                   <br />
-                  마케팅 콘텐츠 자동 생성 시스템 및 그 방법
+                  {t("마케팅 콘텐츠 자동 생성 시스템 및 그 방법")}
                 </p>
                 <div className="evidence-detail">
-                  출원번호 {company.patent}
+                  {t("출원번호 ")}
+                  {company.patent}
                   <span>2026.08.21</span>
                 </div>
               </article>
               <article>
                 <span className="evidence-label">RESEARCH & DEVELOPMENT</span>
-                <h3>연구개발전담부서 운영</h3>
+                <h3>{t("연구개발전담부서 운영")}</h3>
                 <p>
-                  인정받은 연구개발전담부서를 중심으로
+                  {t("인정받은 연구개발전담부서를 중심으로")}
                   <br />
-                  상품 정보 반영과 콘텐츠 품질을 연구합니다.
+                  {t("상품 정보 반영과 콘텐츠 품질을 연구합니다.")}
                 </p>
                 <div className="evidence-detail">
-                  상품 이해 · 생성 품질 고도화
+                  {t("상품 이해 · 생성 품질 고도화")}
                 </div>
               </article>
               <article>
                 <span className="evidence-label">TECHNOLOGY TO PRODUCT</span>
-                <h3>모바일 앱 MVP 개발</h3>
+                <h3>{t("모바일 앱 MVP 개발")}</h3>
                 <p>
-                  출원 기술을 모바일 서비스로 구현했습니다.
+                  {t("출원 기술을 모바일 서비스로 구현했습니다.")}
                   <br />
-                  Google Play에서 aiadcast를 만나보세요.
+                  {t("Google Play에서 aiadcast를 만나보세요.")}
                 </p>
                 <a
                   className="evidence-detail"
@@ -488,7 +545,8 @@ export default function App() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  aiadcast 앱 보기 <ArrowUpRight size={16} />
+                  {t("aiadcast 앱 보기 ")}
+                  <ArrowUpRight size={16} />
                 </a>
               </article>
             </div>
@@ -507,19 +565,19 @@ export default function App() {
             <div className="about-grid">
               <div>
                 <h2 id="about-title">
-                  현장의 이해에서 시작한
+                  {t("현장의 이해에서 시작한")}
                   <br />
-                  AI 기술 기업, 셀업랩스.
+                  {t("AI 기술 기업, 셀업랩스.")}
                 </h2>
                 <p>
-                  셀업랩스 주식회사는 AI 마케팅 콘텐츠 생성 서비스를
-                  개발·운영하는 정보통신 기업입니다. 포장 산업에서 쌓은 경험을
-                  바탕으로, 상품의 가치를 쉽게 알릴 수 있는 기술을 만듭니다.
+                  {t(
+                    "셀업랩스 주식회사는 AI 마케팅 콘텐츠 생성 서비스를 개발·운영하는 정보통신 기업입니다. 포장 산업에서 쌓은 경험을 바탕으로, 상품의 가치를 쉽게 알릴 수 있는 기술을 만듭니다.",
+                  )}
                 </p>
                 <p>
-                  제품의 규격과 소재를 이해하는 것부터 기업의 마케팅을 돕는
-                  것까지. 현장의 필요를 실제로 사용할 수 있는 서비스로
-                  연결합니다.
+                  {t(
+                    "제품의 규격과 소재를 이해하는 것부터 기업의 마케팅을 돕는 것까지. 현장의 필요를 실제로 사용할 수 있는 서비스로 연결합니다.",
+                  )}
                 </p>
               </div>
               <div className="company-facts">
@@ -529,27 +587,43 @@ export default function App() {
                   </strong>
                   <span>
                     YEARS OF INDUSTRY EXPERIENCE
-                    <small>대표자의 26년 이상 포장 산업 경험</small>
+                    <small>{t("대표자의 26년 이상 포장 산업 경험")}</small>
                   </span>
                 </div>
                 <dl>
                   <div>
-                    <dt>기업명</dt>
+                    <dt>{t("기업명")}</dt>
                     <dd>
-                      셀업랩스 주식회사 <span>selluplabs</span>
+                      {t("셀업랩스 주식회사 ")}
+                      <span>selluplabs</span>
                     </dd>
                   </div>
                   <div>
-                    <dt>사업 분야</dt>
-                    <dd>AI 마케팅 콘텐츠 서비스 개발·운영</dd>
+                    <dt>{t("사업 분야")}</dt>
+                    <dd>{t("AI 마케팅 콘텐츠 서비스 개발·운영")}</dd>
                   </div>
                   <div>
-                    <dt>대표 서비스</dt>
+                    <dt>{t("대표 서비스")}</dt>
                     <dd>aiadcast</dd>
                   </div>
                   <div>
-                    <dt>소재지</dt>
-                    <dd>{company.location}</dd>
+                    <dt>{t("소재지")}</dt>
+                    <dd>{address}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("연락처")}</dt>
+                    <dd>
+                      <a href={company.phoneHref}>{company.phone}</a>
+                      <small className="domestic-phone">
+                        {t("국내")} {company.domesticPhone}
+                      </small>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{t("이메일")}</dt>
+                    <dd>
+                      <a href={`mailto:${company.email}`}>{company.email}</a>
+                    </dd>
                   </div>
                 </dl>
               </div>
@@ -560,7 +634,7 @@ export default function App() {
           <div className="wrap faq-layout">
             <div>
               <span className="eyebrow">FAQ</span>
-              <h2 id="faq-title">자주 묻는 질문</h2>
+              <h2 id="faq-title">{t("자주 묻는 질문")}</h2>
             </div>
             <div className="faq-list">
               {faqs.map((faq, index) => (
@@ -602,11 +676,11 @@ export default function App() {
             <div>
               <span className="eyebrow">LET’S WORK TOGETHER</span>
               <h2 id="contact-title">
-                비즈니스에 필요한 AI,
+                {t("비즈니스에 필요한 AI,")}
                 <br />
-                함께 이야기해 보세요.
+                {t("함께 이야기해 보세요.")}
               </h2>
-              <p>서비스 도입 · 비즈니스 제휴 · 기술 협력</p>
+              <p>{t("서비스 도입 · 비즈니스 제휴 · 기술 협력")}</p>
             </div>
             <div className="contact-actions">
               <button
@@ -614,12 +688,18 @@ export default function App() {
                 type="button"
                 onClick={openContact}
               >
-                서비스·협업 문의 <ArrowUpRight size={19} />
+                {t("서비스·협업 문의 ")}
+                <ArrowUpRight size={19} />
               </button>
               <a href={`mailto:${company.email}`}>
                 {company.email}
                 <ArrowUpRight size={15} />
               </a>
+              <a href={company.phoneHref}>
+                {company.phone}
+                <ArrowUpRight size={15} />
+              </a>
+              <address>{address}</address>
             </div>
           </div>
         </section>
@@ -627,25 +707,36 @@ export default function App() {
       <footer className="site-footer">
         <div className="wrap">
           <div className="footer-top">
-            <a href="#home" aria-label="셀업랩스 홈">
+            <a href="#home" aria-label={t("셀업랩스 홈")}>
               <Brand />
             </a>
             <span>AI TECHNOLOGY FOR REAL BUSINESS.</span>
             <a href="#home" className="back-top">
-              맨 위로 <ArrowUpRight size={15} />
+              {t("맨 위로 ")}
+              <ArrowUpRight size={15} />
             </a>
           </div>
           <div className="footer-bottom">
             <div>
-              <strong>{company.name}</strong>
+              <strong>{t(company.name)}</strong>
               <p>
-                대표 {company.representative}
-                <span>사업자등록번호 {company.businessNumber}</span>
+                {t("대표 ")}
+                {language === "en" ? "Dong-seok Han" : company.representative}
+                <span>
+                  {t("사업자등록번호 ")}
+                  {company.businessNumber}
+                </span>
               </p>
               <p>
-                {company.location}
-                <span>정보통신업 · AI 마케팅 콘텐츠 서비스 개발 및 운영</span>
+                {address}
+                <span>
+                  {t("정보통신업 · AI 마케팅 콘텐츠 서비스 개발 및 운영")}
+                </span>
               </p>
+            </div>
+            <div className="footer-contact-details">
+              <a href={company.phoneHref}>{company.phone}</a>
+              <a href={`mailto:${company.email}`}>{company.email}</a>
             </div>
             <span className="copyright">
               © {new Date().getFullYear()} selluplabs. All rights reserved.

@@ -384,7 +384,9 @@ test("contact form validates input, copies the inquiry, and clearly identifies e
   ).toBe(false);
   await dialog.getByLabel("이름 / 회사명").fill("브라우저 검증 회사");
   await dialog.getByLabel("회신 이메일").fill("tester@example.com");
-  await dialog.getByLabel("문의 유형").selectOption("비즈니스·기술 협력");
+  await dialog
+    .getByLabel("문의 유형")
+    .selectOption({ label: "비즈니스·기술 협력" });
   await dialog
     .getByLabel("문의 내용")
     .fill("자동 검증용 문의 내용입니다. 이메일은 발송하지 않습니다.");
@@ -470,5 +472,189 @@ test("layout fits narrow phones, tablets, and wide desktop screens", async ({
       await page.evaluate(() => document.documentElement.scrollWidth),
       `overflow at ${width}px`,
     ).toBeLessThanOrEqual(width);
+  }
+});
+
+test("company contact information is accurate and actionable in both languages", async ({
+  page,
+}) => {
+  const address = "서울특별시 마포구 양화로 176 B2001-30호";
+  await expect(page.locator("#about")).toContainText(address);
+  await expect(page.locator("#contact address")).toHaveText(address);
+  await expect(page.locator("footer")).toContainText(address);
+  await expect(page.locator(".experience strong")).toHaveText("26+");
+  await expect(page.locator("#about a[href='tel:+821056356211']")).toHaveText(
+    "+82 10-5635-6211",
+  );
+  await expect(
+    page.locator("#about a[href='mailto:selluplabs@gmail.com']"),
+  ).toHaveText("selluplabs@gmail.com");
+  await page.getByRole("button", { name: "English", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("#about")).toContainText(
+    "B2001-30, 176 Yanghwa-ro, Mapo-gu, Seoul, Republic of Korea",
+  );
+  await expect(page.locator("#about")).toContainText(
+    "Over 26 years of packaging industry experience",
+  );
+  await expect(page.locator("#contact address")).toContainText("B2001-30");
+  await expect(page.locator("footer")).toContainText("176 Yanghwa-ro");
+  await expect(page.locator("#contact a[href='tel:+821056356211']")).toHaveText(
+    "+82 10-5635-6211",
+  );
+});
+
+test("language choice has shareable URLs, persistence, explicit overrides and browser history", async ({
+  page,
+}) => {
+  await page.goto("/?lang=ko#cases");
+  await page.getByRole("button", { name: "English", exact: true }).click();
+  await expect(page).toHaveURL(/\?lang=en#cases$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page).toHaveTitle(
+    "selluplabs | AI Marketing Content Technology",
+  );
+  await expect(page.locator("link[rel='canonical']")).toHaveAttribute(
+    "href",
+    "https://selluplabs-homepage.selluplabs.workers.dev/?lang=en",
+  );
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.getByRole("button", { name: "한국어", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ko");
+  await page.goBack();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.goto("/?lang=ko");
+  await expect(page.locator("html")).toHaveAttribute("lang", "ko");
+});
+
+test("English gallery, use cases, FAQ and app introduction are translated and functional", async ({
+  page,
+}) => {
+  await page.goto("/?lang=en");
+  await page
+    .getByRole("button", { name: "Show all 72 examples", exact: true })
+    .click();
+  await expect(page.locator(".gallery-card")).toHaveCount(72);
+  expect(await page.locator(".gallery-grid").innerText()).not.toMatch(
+    /[가-힣]/,
+  );
+  await page.getByRole("searchbox", { name: "Search products" }).fill("glass");
+  await expect(page.locator(".gallery-card")).toHaveCount(4);
+  await page
+    .getByRole("button", { name: "Enlarge Glass perfume bottle", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Glass perfume bottle" }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Clear search" }).click();
+  const labels = [
+    "Company promotion",
+    "Business cards",
+    "Blog",
+    "Reels & Stories",
+    "Product pages",
+    "Stores & exhibitions",
+  ];
+  for (const label of labels) {
+    await page.getByRole("tab", { name: label, exact: true }).click();
+    await page
+      .getByRole("combobox", { name: "Choose a product for the preview" })
+      .selectOption("2");
+    expect(await page.locator("#application-panel").innerText()).not.toMatch(
+      /[가-힣]/,
+    );
+    await expect(page.locator("#application-panel img")).toHaveAttribute(
+      "src",
+      /container-1/,
+    );
+  }
+  await page
+    .getByRole("button", {
+      name: "Does aiadcast generate Reels videos?",
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".faq-list")).toContainText(
+    "does not automatically generate videos",
+  );
+  await page
+    .getByRole("button", { name: "Explore the mobile app", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "The aiadcast mobile app" }),
+  ).toBeVisible();
+  expect(await page.locator(".app-dialog").innerText()).not.toMatch(/[가-힣]/);
+  await page.keyboard.press("Escape");
+  expect(await page.locator("body").innerText()).not.toMatch(/[가-힣]/);
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
+});
+
+test("English contact form retains draft details and copies a localized inquiry", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("button", { name: "문의하기", exact: true }).click();
+  await page.getByLabel("이름 / 회사명").fill("Example Company");
+  await page.getByLabel("회신 이메일").fill("test@example.com");
+  await page.getByLabel("문의 유형").selectOption("partnership");
+  await page
+    .getByLabel("문의 내용")
+    .fill("We would like to discuss a technology partnership.");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "English", exact: true }).click();
+  await page.getByRole("button", { name: "Contact", exact: true }).click();
+  const dialog = page.getByRole("dialog", {
+    name: "Service & partnership inquiries",
+  });
+  await expect(dialog.getByLabel("Name / Company")).toHaveValue(
+    "Example Company",
+  );
+  await expect(dialog.getByLabel("Inquiry type")).toHaveValue("partnership");
+  await dialog
+    .getByRole("button", { name: "Copy message", exact: true })
+    .click();
+  await expect(dialog.getByRole("status")).toContainText(
+    "Your inquiry has been copied",
+  );
+  const body = await page.evaluate(() => navigator.clipboard.readText());
+  expect(body).toContain("Inquiry type: Business / technology partnership");
+  expect(body).toContain("Reply email: test@example.com");
+  expect(body).toContain("selluplabs@gmail.com");
+  expect(body).not.toMatch(/[가-힣]/);
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
+});
+
+test("English layout and language controls fit phones, tablets and desktop screens", async ({
+  page,
+}) => {
+  await page.goto("/?lang=en");
+  for (const width of [320, 375, 390, 680, 768, 900, 1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+      `overflow at ${width}px`,
+    ).toBe(true);
+    const brand = await page.locator(".site-header .brand").boundingBox();
+    const controls = await page.locator(".header-actions").boundingBox();
+    expect(
+      brand && controls && brand.x + brand.width <= controls.x,
+      `header overlap at ${width}px`,
+    ).toBe(true);
+    await expect(
+      page.getByRole("button", { name: "English", exact: true }),
+    ).toBeVisible();
   }
 });

@@ -1,3 +1,4 @@
+import { useI18n } from "./i18n";
 import { useRef, useState } from "react";
 import {
   ArrowRight,
@@ -19,7 +20,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { allExamples } from "./generatedExamples";
 import { company } from "./config";
 
-const channels = [
+const channelCopy = [
   {
     id: "brand",
     label: "기업 홍보",
@@ -117,7 +118,7 @@ const channels = [
     note: "인쇄물 제작과 대형 출력용 편집은 별도로 진행합니다.",
   },
 ] as const;
-const samples = [
+const sampleCopy = [
   {
     label: "박스",
     id: "box-22",
@@ -140,8 +141,8 @@ const samples = [
     detail: "소재의 매력을 살린 제품 소개",
   },
 ] as const;
-type Sample = (typeof samples)[number];
-type ChannelId = (typeof channels)[number]["id"];
+type Sample = (typeof sampleCopy)[number];
+type ChannelId = (typeof channelCopy)[number]["id"];
 
 function PreviewImage({
   sample,
@@ -150,6 +151,7 @@ function PreviewImage({
   sample: Sample;
   poster?: boolean;
 }) {
+  const { t } = useI18n();
   const result = allExamples.find(
     (example) => example.id === (poster ? sample.poster : sample.id),
   )!;
@@ -159,7 +161,9 @@ function PreviewImage({
       src={result.thumbnail}
       width={result.width}
       height={result.height}
-      alt={`${result.title} 실제 생성 이미지를 활용한 배치 예시`}
+      alt={t("{title} 실제 생성 이미지를 활용한 배치 예시", {
+        title: t(result.title),
+      })}
       loading="lazy"
       decoding="async"
     />
@@ -185,10 +189,11 @@ function ApplicationPreview({
   channel: ChannelId;
   sample: Sample;
 }) {
+  const { t } = useI18n();
   if (channel === "brand")
     return (
       <div className="mock-browser brand-mock">
-        <BrowserBar title="브랜드 소개 페이지" />
+        <BrowserBar title={t("브랜드 소개 페이지")} />
         <div className="brand-mock-header">
           <strong>
             YOUR BRAND<span>.</span>
@@ -197,22 +202,23 @@ function ApplicationPreview({
         </div>
         <div className="brand-mock-body">
           <div>
-            <span className="mock-kicker">제품 소개</span>
+            <span className="mock-kicker">{t("제품 소개")}</span>
             <h4>{sample.headline}</h4>
             <p>{sample.detail}</p>
             <div className="mock-specs">
-              <span>상품 규격</span>
-              <span>소재와 특징</span>
-              <span>기업 문의 정보</span>
+              <span>{t("상품 규격")}</span>
+              <span>{t("소재와 특징")}</span>
+              <span>{t("기업 문의 정보")}</span>
             </div>
             <span className="mock-link">
-              제품에 대해 이야기해 보세요 <ArrowUpRight size={13} />
+              {t("제품에 대해 이야기해 보세요 ")}
+              <ArrowUpRight size={13} />
             </span>
           </div>
           <PreviewImage sample={sample} />
         </div>
         <div className="mock-browser-footer">
-          회사소개서 · 비즈니스 제안서 · 이메일 홍보
+          {t("회사소개서 · 비즈니스 제안서 · 이메일 홍보")}
         </div>
       </div>
     );
@@ -225,21 +231,24 @@ function ApplicationPreview({
             <ArrowUpRight size={24} />
           </div>
           <strong>
-            제품과 사람을
+            {t("제품과 사람을")}
             <br />
-            연결하는 소개.
+            {t("연결하는 소개.")}
           </strong>
           <p>
-            홍보 담당자 <span>제품 상담 · 비즈니스 문의</span>
+            {t("홍보 담당자 ")}
+            <span>{t("제품 상담 · 비즈니스 문의")}</span>
           </p>
           <div className="business-card-rule" />
           <span>
-            <Mail size={13} /> 명함의 연락처로 상담 연결
+            <Mail size={13} />
+            {t(" 명함의 연락처로 상담 연결")}
           </span>
         </div>
         <div className="business-card-attachment">
           <span>
-            <ImageIcon size={14} /> 명함과 함께 전달하는 상품 이미지
+            <ImageIcon size={14} />
+            {t(" 명함과 함께 전달하는 상품 이미지")}
           </span>
           <PreviewImage sample={sample} />
         </div>
@@ -248,25 +257,26 @@ function ApplicationPreview({
   if (channel === "blog")
     return (
       <div className="mock-browser blog-mock">
-        <BrowserBar title="우리 브랜드의 제품 이야기" />
+        <BrowserBar title={t("우리 브랜드의 제품 이야기")} />
         <div className="blog-mock-content">
           <span className="mock-kicker">PRODUCT JOURNAL</span>
           <h4>
             {sample.label},<br />
-            고르기 전에 살펴볼 것들.
+            {t("고르기 전에 살펴볼 것들.")}
           </h4>
-          <p className="blog-byline">우리 브랜드 · 제품 가이드</p>
+          <p className="blog-byline">{t("우리 브랜드 · 제품 가이드")}</p>
           <div className="blog-columns">
             <PreviewImage sample={sample} />
             <div>
-              <h5>01. 필요한 규격부터</h5>
-              <p>사용할 공간과 담을 제품에 맞는 크기를 확인해 보세요.</p>
-              <h5>02. 제품의 특징까지</h5>
-              <p>소재와 디자인, 활용 목적을 함께 살펴보세요.</p>
-              <h5>03. 더 궁금한 점은</h5>
-              <p>제품에 관한 자세한 상담을 이어가세요.</p>
+              <h5>{t("01. 필요한 규격부터")}</h5>
+              <p>{t("사용할 공간과 담을 제품에 맞는 크기를 확인해 보세요.")}</p>
+              <h5>{t("02. 제품의 특징까지")}</h5>
+              <p>{t("소재와 디자인, 활용 목적을 함께 살펴보세요.")}</p>
+              <h5>{t("03. 더 궁금한 점은")}</h5>
+              <p>{t("제품에 관한 자세한 상담을 이어가세요.")}</p>
               <span className="blog-tag">
-                #{sample.label.replaceAll(" ", "")} #제품소개
+                #{sample.label.replaceAll(" ", "")}
+                {t(" #제품소개")}
               </span>
             </div>
           </div>
@@ -279,29 +289,32 @@ function ApplicationPreview({
         <div className="social-phone">
           <div className="social-phone-top">
             <span>Reels</span>
-            <span>구성 예시</span>
+            <span>{t("구성 예시")}</span>
           </div>
           <div className="social-image">
             <PreviewImage sample={sample} />
           </div>
           <div className="social-caption">
-            <strong>우리 브랜드의 {sample.label}</strong>
-            <span>상품의 특징을 한눈에 만나보세요.</span>
+            <strong>
+              {t("우리 브랜드의 ")}
+              {sample.label}
+            </strong>
+            <span>{t("상품의 특징을 한눈에 만나보세요.")}</span>
             <div>
               <Music2 size={13} />
-              <span>Instagram에서 음악 추가</span>
+              <span>{t("Instagram에서 음악 추가")}</span>
             </div>
           </div>
         </div>
         <div className="social-format">
-          9:16<span>릴스 소재 · 스토리 이미지</span>
+          9:16<span>{t("릴스 소재 · 스토리 이미지")}</span>
         </div>
       </div>
     );
   if (channel === "commerce")
     return (
       <div className="mock-browser commerce-mock">
-        <BrowserBar title="상품 상세 페이지" />
+        <BrowserBar title={t("상품 상세 페이지")} />
         <div className="commerce-title">
           <strong>YOUR BRAND</strong>
           <span>PRODUCT DETAIL</span>
@@ -309,29 +322,30 @@ function ApplicationPreview({
         <div className="commerce-body">
           <PreviewImage sample={sample} />
           <div>
-            <span className="mock-kicker">제품 소개</span>
+            <span className="mock-kicker">{t("제품 소개")}</span>
             <h4>
-              우리 브랜드의
+              {t("우리 브랜드의")}
               <br />
               {sample.label}
             </h4>
             <p>{sample.detail}</p>
             <dl>
               <div>
-                <dt>규격</dt>
-                <dd>제품에 맞는 크기</dd>
+                <dt>{t("규격")}</dt>
+                <dd>{t("제품에 맞는 크기")}</dd>
               </div>
               <div>
-                <dt>특징</dt>
-                <dd>소재 · 디자인 · 용도</dd>
+                <dt>{t("특징")}</dt>
+                <dd>{t("소재 · 디자인 · 용도")}</dd>
               </div>
               <div>
-                <dt>문의</dt>
-                <dd>기업 정보로 연결</dd>
+                <dt>{t("문의")}</dt>
+                <dd>{t("기업 정보로 연결")}</dd>
               </div>
             </dl>
             <span className="commerce-inquiry">
-              제품 상담 안내 <ArrowRight size={13} />
+              {t("제품 상담 안내 ")}
+              <ArrowRight size={13} />
             </span>
           </div>
         </div>
@@ -345,9 +359,9 @@ function ApplicationPreview({
       <div className="poster-caption">
         <span>STORE DISPLAY</span>
         <strong>
-          고객이 만나는 곳에,
+          {t("고객이 만나는 곳에,")}
           <br />
-          제품의 이야기를.
+          {t("제품의 이야기를.")}
         </strong>
       </div>
     </div>
@@ -355,6 +369,9 @@ function ApplicationPreview({
 }
 
 export function Applications() {
+  const { t, localize } = useI18n();
+  const channels = localize(channelCopy);
+  const samples = localize(sampleCopy);
   const [active, setActive] = useState(0);
   const [sampleIndex, setSampleIndex] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -372,19 +389,20 @@ export function Applications() {
         </div>
         <div className="section-heading">
           <h2 id="applications-title">
-            한 장의 상품 이미지,
+            {t("한 장의 상품 이미지,")}
             <br />
-            고객을 만나는 여섯 가지 방법.
+            {t("고객을 만나는 여섯 가지 방법.")}
           </h2>
           <p>
-            어디에 써야 할지 고민했다면.
-            <br />내 비즈니스에 가까운 활용 장면을 선택해 보세요.
+            {t("어디에 써야 할지 고민했다면.")}
+            <br />
+            {t("내 비즈니스에 가까운 활용 장면을 선택해 보세요.")}
           </p>
         </div>
         <div
           className="application-tabs"
           role="tablist"
-          aria-label="마케팅 이미지 활용 채널"
+          aria-label={t("마케팅 이미지 활용 채널")}
         >
           {channels.map((item, index) => (
             <button
@@ -453,17 +471,18 @@ export function Applications() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              내 상품으로 시작하기 <ArrowUpRight size={18} />
+              {t("내 상품으로 시작하기 ")}
+              <ArrowUpRight size={18} />
             </a>
             <p className="application-note">{channel.note}</p>
           </div>
           <div className="application-visual">
             <div className="application-preview-toolbar">
-              <span>활용 화면 예시</span>
+              <span>{t("활용 화면 예시")}</span>
               <label>
-                상품 선택
+                {t("상품 선택")}
                 <select
-                  aria-label="활용 예시 상품 선택"
+                  aria-label={t("활용 예시 상품 선택")}
                   value={sampleIndex}
                   onChange={(event) =>
                     setSampleIndex(Number(event.target.value))
@@ -483,7 +502,9 @@ export function Applications() {
                 sample={samples[sampleIndex]}
               />
               <figcaption>
-                실제 생성 이미지를 활용해 게시·배치 화면을 재구성했습니다.
+                {t(
+                  "실제 생성 이미지를 활용해 게시·배치 화면을 재구성했습니다.",
+                )}
               </figcaption>
             </figure>
           </div>
@@ -494,39 +515,43 @@ export function Applications() {
   );
 }
 function WhyAiadcast() {
+  const { t } = useI18n();
   return (
     <div className="why-aiadcast" aria-labelledby="why-title">
       <div className="why-heading">
         <span className="eyebrow">WHY AIADCAST</span>
         <h3 id="why-title">
-          제품은 이미 준비됐으니까.
+          {t("제품은 이미 준비됐으니까.")}
           <br />
-          이제, 알리는 일을 시작하세요.
+          {t("이제, 알리는 일을 시작하세요.")}
         </h3>
       </div>
       <div className="why-reasons">
         <article>
           <span>01 / PRODUCT FIRST</span>
-          <h4>내 상품의 정보에서 출발합니다.</h4>
+          <h4>{t("내 상품의 정보에서 출발합니다.")}</h4>
           <p>
-            규격, 소재, 특징과 참조 이미지를 생성의 기준으로 활용합니다. 제품을
-            아는 사람의 정보가 홍보의 재료가 됩니다.
+            {t(
+              "규격, 소재, 특징과 참조 이미지를 생성의 기준으로 활용합니다. 제품을 아는 사람의 정보가 홍보의 재료가 됩니다.",
+            )}
           </p>
         </article>
         <article>
           <span>02 / READY TO INTRODUCE</span>
-          <h4>이미지·설명·기업 정보를 함께.</h4>
+          <h4>{t("이미지·설명·기업 정보를 함께.")}</h4>
           <p>
-            상품의 모습부터 설명 문구, 회사명과 연락처까지. 고객에게 보여줄
-            내용을 하나의 마케팅 이미지로 구성합니다.
+            {t(
+              "상품의 모습부터 설명 문구, 회사명과 연락처까지. 고객에게 보여줄 내용을 하나의 마케팅 이미지로 구성합니다.",
+            )}
           </p>
         </article>
         <article>
           <span>03 / MORE PLACES TO SHARE</span>
-          <h4>만든 콘텐츠를 여러 접점으로.</h4>
+          <h4>{t("만든 콘텐츠를 여러 접점으로.")}</h4>
           <p>
-            생성한 이미지를 다운로드해 블로그, SNS, 제안서 등에 활용하세요. 각
-            채널에 맞게 편집하고 직접 게시할 수 있습니다.
+            {t(
+              "생성한 이미지를 다운로드해 블로그, SNS, 제안서 등에 활용하세요. 각 채널에 맞게 편집하고 직접 게시할 수 있습니다.",
+            )}
           </p>
         </article>
       </div>
@@ -534,6 +559,7 @@ function WhyAiadcast() {
   );
 }
 export function AppInstall() {
+  const { t } = useI18n();
   return (
     <section
       className="install-section section-space"
@@ -544,14 +570,14 @@ export function AppInstall() {
         <div className="install-copy">
           <span className="eyebrow">YOUR NEXT PRODUCT STORY</span>
           <h2 id="install-title">
-            다음에 소개할 상품은,
+            {t("다음에 소개할 상품은,")}
             <br />
-            <span>당신의 상품입니다.</span>
+            <span>{t("당신의 상품입니다.")}</span>
           </h2>
           <p>
-            상품 정보와 참조 이미지를 준비하세요.
+            {t("상품 정보와 참조 이미지를 준비하세요.")}
             <br />
-            aiadcast에서 첫 마케팅 콘텐츠를 만들어보세요.
+            {t("aiadcast에서 첫 마케팅 콘텐츠를 만들어보세요.")}
           </p>
           <a
             className="button button-white install-link"
@@ -559,14 +585,15 @@ export function AppInstall() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Smartphone size={21} /> Google Play에서 aiadcast 설치{" "}
-            <ArrowUpRight size={19} />
+            <Smartphone size={21} />
+            {t(" Google Play에서 aiadcast 설치")} <ArrowUpRight size={19} />
           </a>
           <span className="install-platform">
-            Android 앱 · 이용권과 요금은 앱에서 확인할 수 있습니다.
+            {t("Android 앱 · 이용권과 요금은 앱에서 확인할 수 있습니다.")}
           </span>
           <a className="install-back-link" href="#cases">
-            생성 사례를 더 살펴볼게요 <ArrowRight size={15} />
+            {t("생성 사례를 더 살펴볼게요 ")}
+            <ArrowRight size={15} />
           </a>
         </div>
         <div className="install-guide">
@@ -575,47 +602,49 @@ export function AppInstall() {
               href={company.appUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="QR코드 대신 Google Play 설치 페이지 열기"
+              aria-label={t("QR코드 대신 Google Play 설치 페이지 열기")}
             >
               <QRCodeSVG
                 value={company.appUrl}
                 size={136}
                 level="M"
                 marginSize={2}
-                title="Google Play aiadcast 설치 페이지 QR코드"
+                title={t("Google Play aiadcast 설치 페이지 QR코드")}
                 role="img"
               />
             </a>
             <div>
               <Smartphone size={20} />
               <strong>
-                휴대폰 카메라로
+                {t("휴대폰 카메라로")}
                 <br />
-                앱을 만나보세요.
+                {t("앱을 만나보세요.")}
               </strong>
-              <span>QR을 스캔하면 Google Play로 연결됩니다.</span>
+              <span>{t("QR을 스캔하면 Google Play로 연결됩니다.")}</span>
             </div>
           </div>
           <ol>
             <li>
               <span>01</span>
               <p>
-                aiadcast 앱 설치<small>Google Play에서 시작</small>
+                {t("aiadcast 앱 설치")}
+                <small>{t("Google Play에서 시작")}</small>
               </p>
               <ChevronRight size={17} />
             </li>
             <li>
               <span>02</span>
               <p>
-                상품 정보와 참조 이미지 입력
-                <small>상품명 · 규격 · 상세 설명 · 기업 정보</small>
+                {t("상품 정보와 참조 이미지 입력")}
+                <small>{t("상품명 · 규격 · 상세 설명 · 기업 정보")}</small>
               </p>
               <ChevronRight size={17} />
             </li>
             <li>
               <span>03</span>
               <p>
-                원하는 비율로 생성<small>9:16 카드뉴스 · 2:3 포스터</small>
+                {t("원하는 비율로 생성")}
+                <small>{t("9:16 카드뉴스 · 2:3 포스터")}</small>
               </p>
               <Check size={17} />
             </li>
