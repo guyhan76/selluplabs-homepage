@@ -525,11 +525,11 @@ export default function App() {
               <div className="company-facts">
                 <div className="experience">
                   <strong>
-                    25<span>+</span>
+                    26<span>+</span>
                   </strong>
                   <span>
                     YEARS OF INDUSTRY EXPERIENCE
-                    <small>대표자의 25년 이상 포장 산업 경험</small>
+                    <small>대표자의 26년 이상 포장 산업 경험</small>
                   </span>
                 </div>
                 <dl>
