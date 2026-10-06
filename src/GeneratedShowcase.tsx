@@ -5,80 +5,135 @@ import {
   ArrowUpRight,
   Maximize2,
   Plus,
+  Search,
   X,
 } from "lucide-react";
-import { generatedCategories } from "./generatedExamples";
+import {
+  allExamples,
+  generatedCategories,
+  totalExamples,
+} from "./generatedExamples";
 import type { OutputFormat } from "./generatedExamples";
+import { company } from "./config";
 
-const examples = [
-  ...generatedCategories.map((category) => ({
-    ...category.examples[0],
-    categoryId: category.id,
-    categoryName: category.name,
-  })),
-  ...generatedCategories.flatMap((category) =>
-    category.examples
-      .slice(1)
-      .map((example) => ({
-        ...example,
-        categoryId: category.id,
-        categoryName: category.name,
-      })),
-  ),
-];
+const INITIAL_COUNT = 8;
+const PAGE_SIZE = 12;
+const normalize = (value: string) =>
+  value.toLowerCase().replace(/[\s·・-]/g, "");
 
 export function GeneratedShowcase() {
   const [categoryId, setCategoryId] = useState("all");
   const [format, setFormat] = useState<OutputFormat | "all">("all");
-  const [showAll, setShowAll] = useState(false);
+  const [query, setQuery] = useState("");
+  const [limit, setLimit] = useState(INITIAL_COUNT);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const categoryExamples = examples.filter(
+  const gridRef = useRef<HTMLDivElement>(null);
+  const categoryExamples = allExamples.filter(
     (example) => categoryId === "all" || example.categoryId === categoryId,
   );
   const formats = [
     ...new Set(categoryExamples.map((example) => example.format)),
   ];
   const filtered = categoryExamples.filter(
-    (example) => format === "all" || example.format === format,
+    (example) =>
+      (format === "all" || example.format === format) &&
+      query
+        .trim()
+        .split(/\s+/)
+        .every((term) =>
+          normalize(`${example.title} ${example.categoryName}`).includes(
+            normalize(term),
+          ),
+        ),
   );
-  const visible =
-    categoryId === "all" && !showAll ? filtered.slice(0, 4) : filtered;
-  const current = activeIndex === null ? null : visible[activeIndex];
+  const visible = filtered.slice(0, limit);
+  const current = activeIndex === null ? null : filtered[activeIndex];
   const move = (direction: number) =>
     setActiveIndex((previous) =>
       previous === null
         ? null
-        : (previous + direction + visible.length) % visible.length,
+        : (previous + direction + filtered.length) % filtered.length,
     );
-  const open = (index: number) => {
-    setActiveIndex(index);
-    dialogRef.current?.showModal();
+  const reset = () => {
+    setCategoryId("all");
+    setFormat("all");
+    setQuery("");
+    setLimit(INITIAL_COUNT);
+  };
+  const expand = (nextLimit: number) => {
+    const firstNew = visible.length;
+    setLimit(nextLimit);
+    // Keep keyboard users at the first newly revealed result.
+    requestAnimationFrame(() =>
+      gridRef.current
+        ?.querySelectorAll<HTMLButtonElement>(".gallery-image-button")
+        [firstNew]?.focus({ preventScroll: true }),
+    );
   };
   return (
     <div className="generated-showcase">
+      <div className="gallery-toolbar">
+        <p className="gallery-total">
+          <strong>{totalExamples}</strong> 실제 생성 사례{" "}
+          <span>6개 상품 카테고리</span>
+        </p>
+        <div className="gallery-search">
+          <Search size={17} aria-hidden="true" />
+          <input
+            type="search"
+            aria-label="상품 검색"
+            placeholder="택배박스, 화장품, 유리 용기 검색"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setLimit(INITIAL_COUNT);
+            }}
+          />
+          {query && (
+            <button
+              type="button"
+              aria-label="검색어 지우기"
+              onClick={() => {
+                setQuery("");
+                setLimit(INITIAL_COUNT);
+              }}
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
       <div className="gallery-filters">
         <div
           className="category-tabs"
           role="group"
           aria-label="상품 카테고리 선택"
         >
-          {[{ id: "all", name: "전체" }, ...generatedCategories].map(
-            (category) => (
-              <button
-                key={category.id}
-                type="button"
-                aria-pressed={categoryId === category.id}
-                onClick={() => {
-                  setCategoryId(category.id);
-                  setFormat("all");
-                  setShowAll(false);
-                }}
-              >
-                {category.name}
-              </button>
-            ),
-          )}
+          {[
+            { id: "all", name: "전체", count: totalExamples },
+            ...generatedCategories.map((category) => ({
+              ...category,
+              count: category.examples.length,
+            })),
+          ].map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              aria-label={category.name}
+              aria-pressed={categoryId === category.id}
+              onClick={() => {
+                setCategoryId(category.id);
+                setFormat("all");
+                setLimit(INITIAL_COUNT);
+              }}
+            >
+              {category.name}{" "}
+              <span aria-hidden="true" className="category-count">
+                {category.count}
+              </span>
+            </button>
+          ))}
         </div>
         <div className="format-tabs" role="group" aria-label="콘텐츠 비율 선택">
           <button
@@ -86,7 +141,7 @@ export function GeneratedShowcase() {
             aria-pressed={format === "all"}
             onClick={() => {
               setFormat("all");
-              setShowAll(false);
+              setLimit(INITIAL_COUNT);
             }}
           >
             전체 비율
@@ -99,26 +154,34 @@ export function GeneratedShowcase() {
               aria-pressed={format === value}
               onClick={() => {
                 setFormat(value);
-                setShowAll(false);
+                setLimit(INITIAL_COUNT);
               }}
             >
-              {value} <span>{value === "9:16" ? "카드뉴스" : "포스터"}</span>
+              {value}
             </button>
           ))}
         </div>
       </div>
-      <div className="gallery-grid" aria-label="실제 생성 이미지 목록">
+      <div
+        ref={gridRef}
+        className="gallery-grid"
+        aria-label="실제 생성 이미지 목록"
+      >
         {visible.map((example, index) => (
-          <article className="gallery-card" key={example.src}>
+          <article className="gallery-card" key={example.id}>
             <button
               type="button"
               className="gallery-image-button"
               aria-label={`${example.title} 이미지 크게 보기`}
-              onClick={() => open(index)}
+              onClick={() => {
+                setActiveIndex(index);
+                dialogRef.current?.showModal();
+              }}
             >
               <img
                 data-testid="generated-image"
-                src={example.src}
+                data-original={example.src}
+                src={example.thumbnail}
                 width={example.width}
                 height={example.height}
                 alt={example.alt}
@@ -140,27 +203,70 @@ export function GeneratedShowcase() {
           </article>
         ))}
       </div>
+      {filtered.length === 0 && (
+        <div className="gallery-empty">
+          <Search size={28} />
+          <h3>검색 조건에 맞는 사례가 없습니다.</h3>
+          <p>다른 상품명으로 검색하거나 전체 사례를 살펴보세요.</p>
+          <button className="text-link" type="button" onClick={reset}>
+            필터 초기화 <ArrowRight size={17} />
+          </button>
+        </div>
+      )}
       <div className="gallery-bottom">
         <p>
           실제 aiadcast 생성 결과 · 이미지 속 상품·가격·연락처는 사례에 포함된
           내용입니다.
         </p>
-        <span aria-live="polite" className="gallery-count">
+        <span role="status" className="gallery-count">
           {visible.length} / {filtered.length} CASES
         </span>
       </div>
-      {categoryId === "all" && filtered.length > 4 && (
-        <button
-          className="gallery-more"
-          type="button"
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll
-            ? "대표 사례만 보기"
-            : `생성 사례 더 보기 (${filtered.length})`}
-          <Plus size={17} className={showAll ? "is-expanded" : ""} />
-        </button>
+      {filtered.length > INITIAL_COUNT && (
+        <div className="gallery-pagination">
+          {visible.length < filtered.length ? (
+            <>
+              <button
+                className="gallery-more"
+                type="button"
+                onClick={() => expand(limit + PAGE_SIZE)}
+              >
+                {Math.min(PAGE_SIZE, filtered.length - visible.length)}개 더
+                보기 <Plus size={17} />
+              </button>
+              <button
+                className="gallery-show-all"
+                type="button"
+                onClick={() => expand(filtered.length)}
+              >
+                전체 {filtered.length}개 펼치기 <ArrowDownIcon />
+              </button>
+            </>
+          ) : (
+            <button
+              className="gallery-more"
+              type="button"
+              onClick={() => {
+                setLimit(INITIAL_COUNT);
+                requestAnimationFrame(() => {
+                  gridRef.current?.scrollIntoView({ block: "start" });
+                  gridRef.current
+                    ?.querySelector<HTMLButtonElement>(".gallery-image-button")
+                    ?.focus({ preventScroll: true });
+                });
+              }}
+            >
+              대표 사례만 보기 <X size={17} />
+            </button>
+          )}
+        </div>
       )}
+      <div className="gallery-next">
+        <p>내 상품은 어디에 활용할 수 있을까요?</p>
+        <a className="text-link" href="#applications">
+          채널별 활용 예시 보기 <ArrowRight size={17} />
+        </a>
+      </div>
       <dialog
         ref={dialogRef}
         className="case-dialog"
@@ -205,18 +311,18 @@ export function GeneratedShowcase() {
                   type="button"
                   aria-label="확대 이미지 이전 사례"
                   onClick={() => move(-1)}
-                  disabled={visible.length < 2}
+                  disabled={filtered.length < 2}
                 >
                   <ArrowLeft size={18} />
                 </button>
                 <span aria-live="polite">
-                  {(activeIndex ?? 0) + 1} <span>/ {visible.length}</span>
+                  {(activeIndex ?? 0) + 1} <span>/ {filtered.length}</span>
                 </span>
                 <button
                   type="button"
                   aria-label="확대 이미지 다음 사례"
                   onClick={() => move(1)}
-                  disabled={visible.length < 2}
+                  disabled={filtered.length < 2}
                 >
                   <ArrowRight size={18} />
                 </button>
@@ -225,9 +331,20 @@ export function GeneratedShowcase() {
                 원본 보기 <ArrowUpRight size={16} />
               </a>
             </div>
+            <a
+              className="case-install"
+              href={company.appUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              내 상품도 aiadcast로 만들어보기 <ArrowUpRight size={17} />
+            </a>
           </>
         )}
       </dialog>
     </div>
   );
+}
+function ArrowDownIcon() {
+  return <ArrowRight size={15} style={{ transform: "rotate(90deg)" }} />;
 }

@@ -1,6 +1,10 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { generatedCategories } from "../src/generatedExamples";
+import { generatedCategories, allExamples } from "../src/generatedExamples";
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import sharp from "sharp";
+import jsQR from "jsqr";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -21,7 +25,7 @@ test("first screen explains the business and loads real product output without J
   );
   await expect(page.locator(".hero-description")).toBeInViewport();
   await expect(
-    page.getByRole("link", { name: "aiadcast 알아보기", exact: true }),
+    page.getByRole("link", { name: "aiadcast 앱 설치", exact: true }),
   ).toBeInViewport();
   await expect(page.locator("footer")).toContainText("셀업랩스 주식회사");
   await expect(page.locator("#technology")).toContainText("특허 1건 출원");
@@ -38,114 +42,305 @@ test("first screen explains the business and loads real product output without J
   expect(errors).toEqual([]);
 });
 
-test("six category filters display intact original images and only available formats", async ({
+test("all 72 supplied originals remain intact and all delivery previews are available", async ({
+  request,
+}) => {
+  expect(allExamples).toHaveLength(72);
+  expect(new Set(allExamples.map((example) => example.id)).size).toBe(72);
+  const manifest = JSON.parse(
+    await readFile("public/images/examples/provenance.json", "utf8"),
+  );
+  expect(manifest).toHaveLength(72);
+  for (const example of allExamples) {
+    const original = await readFile(`public${example.src}`);
+    const record = manifest.find((item: { file: string }) =>
+      example.src.endsWith(`/${item.file}`),
+    );
+    expect(createHash("sha256").update(original).digest("hex")).toBe(
+      record.sha256,
+    );
+    const metadata = await sharp(original).metadata();
+    expect([metadata.width, metadata.height]).toEqual([
+      example.width,
+      example.height,
+    ]);
+    const response = await request.get(example.thumbnail);
+    expect(response.ok(), example.thumbnail).toBe(true);
+    const preview = await sharp(await response.body()).metadata();
+    expect(preview.format).toBe("webp");
+    expect(preview.width).toBeLessThanOrEqual(640);
+    expect(
+      Math.abs(
+        preview.width! / preview.height! - example.width / example.height,
+      ),
+    ).toBeLessThan(0.002);
+  }
+});
+
+test("six categories expose every result with accurate formats and working original images", async ({
   page,
 }) => {
+  const gallery = page.locator(".generated-showcase");
   for (const category of generatedCategories) {
-    const button = page.getByRole("button", {
+    const button = gallery.getByRole("button", {
       name: category.name,
       exact: true,
     });
     await button.click();
     await expect(button).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByTestId("generated-image")).toHaveCount(8);
+    await gallery
+      .getByRole("button", {
+        name: `전체 ${category.examples.length}개 펼치기`,
+        exact: true,
+      })
+      .click();
     await expect(page.getByTestId("generated-image")).toHaveCount(
       category.examples.length,
     );
-    for (const example of category.examples) {
-      const img = page.locator(`.gallery-grid img[src="${example.src}"]`);
-      await img.scrollIntoViewIfNeeded();
-      await expect
-        .poll(() =>
-          img.evaluate(
-            (image: HTMLImageElement) =>
-              image.complete && image.naturalWidth > 0,
-          ),
-        )
-        .toBe(true);
-      const dimensions = await img.evaluate((image: HTMLImageElement) => ({
-        width: image.naturalWidth,
-        height: image.naturalHeight,
-      }));
-      expect(dimensions).toEqual({
-        width: example.width,
-        height: example.height,
-      });
-    }
+    const ids = await page
+      .getByTestId("generated-image")
+      .evaluateAll((images) =>
+        images.map((img) => img.getAttribute("data-original")),
+      );
+    expect(ids).toEqual(category.examples.map((example) => example.src));
+    const last = category.examples.at(-1)!;
+    await gallery
+      .getByRole("button", {
+        name: `${last.title} 이미지 크게 보기`,
+        exact: true,
+      })
+      .click();
+    const image = page.locator(".case-dialog-image");
+    await expect
+      .poll(() =>
+        image.evaluate((img: HTMLImageElement) => [
+          img.naturalWidth,
+          img.naturalHeight,
+        ]),
+      )
+      .toEqual([last.width, last.height]);
+    await page.keyboard.press("Escape");
   }
-  await page.getByRole("button", { name: "쇼핑백", exact: true }).click();
-  await page.getByRole("button", { name: "2:3 포스터", exact: true }).click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(1);
-  await expect(page.getByTestId("generated-image")).toHaveAttribute(
-    "src",
-    "/images/examples/bag-10.png",
-  );
-  await page
+  await gallery.getByRole("button", { name: "쇼핑백", exact: true }).click();
+  await gallery
+    .getByRole("button", { name: "2:3 포스터", exact: true })
+    .click();
+  await expect(page.getByTestId("generated-image")).toHaveCount(3);
+  await gallery
     .getByRole("button", { name: "9:16 카드뉴스", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveAttribute(
-    "src",
-    "/images/examples/bag-1.png",
-  );
-  await page.getByRole("button", { name: "용기", exact: true }).click();
+  await expect(page.getByTestId("generated-image")).toHaveCount(7);
+  await gallery.getByRole("button", { name: "용기", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "2:3 포스터", exact: true }),
+    gallery.getByRole("button", { name: "2:3 포스터", exact: true }),
   ).toHaveCount(0);
-  await expect(page.getByTestId("generated-image")).toHaveCount(3);
+  await expect(
+    gallery.getByRole("button", { name: "전체 비율", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
-test("gallery reveals all 13 examples and combined filters have no empty categories", async ({
+test("gallery search, pagination, full expansion, and empty state work together", async ({
   page,
 }) => {
-  await expect(page.getByTestId("generated-image")).toHaveCount(4);
-  await page
-    .getByRole("button", { name: "생성 사례 더 보기 (13)", exact: true })
+  const gallery = page.locator(".generated-showcase");
+  await expect(page.getByTestId("generated-image")).toHaveCount(8);
+  await gallery
+    .getByRole("button", { name: "12개 더 보기", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(13);
-  await page
+  await expect(page.getByTestId("generated-image")).toHaveCount(20);
+  await gallery
+    .getByRole("button", { name: "전체 72개 펼치기", exact: true })
+    .click();
+  await expect(page.getByTestId("generated-image")).toHaveCount(72);
+  await expect(gallery.getByRole("status")).toHaveText("72 / 72 CASES");
+  await gallery
     .getByRole("button", { name: "대표 사례만 보기", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(4);
-  await page.getByRole("button", { name: "2:3 포스터", exact: true }).click();
-  await page
-    .getByRole("button", { name: "생성 사례 더 보기 (5)", exact: true })
+  await expect(page.getByTestId("generated-image")).toHaveCount(8);
+  await gallery
+    .getByRole("button", { name: "2:3 포스터", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(5);
-  await page.getByRole("button", { name: "용기", exact: true }).click();
+  await gallery
+    .getByRole("button", { name: "전체 11개 펼치기", exact: true })
+    .click();
+  await expect(page.getByTestId("generated-image")).toHaveCount(11);
+  await gallery.getByRole("button", { name: "전체 비율", exact: true }).click();
+  await gallery.getByRole("searchbox", { name: "상품 검색" }).fill("화장품");
+  await expect(page.getByTestId("generated-image")).toHaveCount(4);
+  await gallery.getByRole("searchbox", { name: "상품 검색" }).fill("유리 용기");
+  await expect(page.getByTestId("generated-image")).toHaveCount(4);
+  await gallery
+    .getByRole("searchbox", { name: "상품 검색" })
+    .fill("검색결과없는상품");
   await expect(
-    page.getByRole("button", { name: "전체 비율", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByTestId("generated-image")).toHaveCount(3);
+    gallery.getByText("검색 조건에 맞는 사례가 없습니다."),
+  ).toBeVisible();
+  await expect(page.getByTestId("generated-image")).toHaveCount(0);
+  await gallery.getByRole("button", { name: "필터 초기화" }).click();
+  await expect(page.getByTestId("generated-image")).toHaveCount(8);
+  await expect(
+    gallery.getByRole("searchbox", { name: "상품 검색" }),
+  ).toHaveValue("");
 });
 
-test("generated images expand with accessible controls and keyboard navigation", async ({
+test("lightbox navigates all filtered results beyond the first page and restores focus", async ({
   page,
 }) => {
-  await page.getByRole("button", { name: "쇼핑백", exact: true }).click();
-  const trigger = page.getByRole("button", {
+  const gallery = page.locator(".generated-showcase");
+  await gallery.getByRole("button", { name: "쇼핑백", exact: true }).click();
+  const trigger = gallery.getByRole("button", {
     name: "브랜드 쇼핑백 이미지 크게 보기",
     exact: true,
   });
   await trigger.click();
-  const dialog = page.getByRole("dialog", {
-    name: "브랜드 쇼핑백",
-    exact: true,
-  });
+  const dialog = page.locator(".case-dialog");
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link", { name: "원본 보기" })).toHaveAttribute(
     "href",
     "/images/examples/bag-1.png",
   );
+  await page.keyboard.press("ArrowLeft");
+  await expect(dialog.locator("h2")).toHaveText("맞춤형 쇼핑백");
+  await expect(dialog.getByRole("link", { name: "원본 보기" })).toHaveAttribute(
+    "href",
+    "/images/examples/bag-10.png",
+  );
+  await page.keyboard.press("ArrowRight");
+  await expect(dialog.locator("h2")).toHaveText("브랜드 쇼핑백");
+  await expect(
+    dialog.getByRole("link", { name: "내 상품도 aiadcast로 만들어보기" }),
+  ).toHaveAttribute("href", /play.google.com/);
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
     .analyze();
   expect(result.violations).toEqual([]);
-  await page.keyboard.press("ArrowRight");
-  await expect(page.locator(".case-dialog h2")).toHaveText("맞춤형 쇼핑백");
-  await page.keyboard.press("ArrowLeft");
-  await expect(page.locator(".case-dialog h2")).toHaveText("브랜드 쇼핑백");
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(trigger).toBeFocused();
+});
+
+test("six use-case previews switch channels and products with accessible keyboard controls", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  const applications = page.locator("#applications");
+  for (const name of [
+    "기업 홍보",
+    "명함",
+    "블로그",
+    "릴스·스토리",
+    "상품 상세",
+    "매장·전시",
+  ]) {
+    const tab = applications.getByRole("tab", { name, exact: true });
+    await tab.click();
+    await expect(tab).toHaveAttribute("aria-selected", "true");
+    const panel = applications.getByRole("tabpanel");
+    await expect(
+      panel.getByRole("link", { name: "내 상품으로 시작하기" }),
+    ).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=kr.co.beehivecorp.aiadcast",
+    );
+    await applications
+      .getByRole("combobox", { name: "활용 예시 상품 선택" })
+      .selectOption("2");
+    await expect(panel.locator(".application-product-image")).toHaveAttribute(
+      "src",
+      "/images/examples/previews/container-1.webp",
+    );
+    const img = panel.locator(".application-product-image");
+    await img.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        img.evaluate(
+          (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
+        ),
+      )
+      .toBe(true);
+    await expect(panel.locator("figcaption")).toContainText("재구성했습니다");
+    const accessibility = await new AxeBuilder({ page })
+      .include("#applications")
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    expect(accessibility.violations, name).toEqual([]);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(await page.evaluate(() => innerWidth));
+  }
+  const first = applications.getByRole("tab", {
+    name: "기업 홍보",
+    exact: true,
+  });
+  await first.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    applications.getByRole("tab", { name: "명함", exact: true }),
+  ).toBeFocused();
+  await expect(
+    applications.getByRole("tab", { name: "명함", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
+  await expect(
+    applications.getByRole("tab", { name: "매장·전시", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(first).toBeFocused();
+  await applications
+    .getByRole("tab", { name: "릴스·스토리", exact: true })
+    .click();
+  await expect(applications.locator(".application-note")).toContainText(
+    "aiadcast는 이미지를 생성합니다",
+  );
+});
+
+test("installation links and desktop QR point to the official app without free-service claims", async ({
+  page,
+  isMobile,
+}) => {
+  const install = page.locator("#get-app");
+  await expect(
+    install.getByRole("link", {
+      name: "Google Play에서 aiadcast 설치",
+      exact: true,
+    }),
+  ).toHaveAttribute(
+    "href",
+    "https://play.google.com/store/apps/details?id=kr.co.beehivecorp.aiadcast",
+  );
+  await expect(install).toContainText("이용권과 요금은 앱에서 확인");
+  if (!isMobile) {
+    const qr = install.getByRole("img", {
+      name: "Google Play aiadcast 설치 페이지 QR코드",
+    });
+    await qr.scrollIntoViewIfNeeded();
+    const pixels = await sharp(await qr.screenshot())
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const decoded = jsQR(
+      new Uint8ClampedArray(pixels.data),
+      pixels.info.width,
+      pixels.info.height,
+    );
+    expect(decoded?.data).toBe(
+      "https://play.google.com/store/apps/details?id=kr.co.beehivecorp.aiadcast",
+    );
+    await expect(
+      install.getByRole("img", {
+        name: "Google Play aiadcast 설치 페이지 QR코드",
+      }),
+    ).toBeVisible();
+    await expect(
+      install.getByRole("link", {
+        name: "QR코드 대신 Google Play 설치 페이지 열기",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=kr.co.beehivecorp.aiadcast",
+    );
+  }
 });
 
 test("app dialog has a real screenshot and the confirmed Google Play link", async ({

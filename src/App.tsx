@@ -11,10 +11,12 @@ import {
 import { company } from "./config";
 import { ContactDialog, AppPreview } from "./Dialogs";
 import { GeneratedShowcase } from "./GeneratedShowcase";
+import { Applications, AppInstall } from "./Applications";
 
 const navigation = [
   { label: "서비스", href: "#service" },
   { label: "생성 사례", href: "#cases" },
+  { label: "활용 방법", href: "#applications" },
   { label: "기술", href: "#technology" },
   { label: "회사 소개", href: "#about" },
 ];
@@ -148,8 +150,13 @@ export default function App() {
                 <br className="desktop-break" /> AI 서비스를 개발·운영합니다.
               </p>
               <div className="hero-actions">
-                <a className="button button-white" href="#service">
-                  aiadcast 알아보기 <ArrowUpRight size={18} />
+                <a
+                  className="button button-white"
+                  href={company.appUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  aiadcast 앱 설치 <ArrowUpRight size={18} />
                 </a>
                 <a className="button button-outline" href="#cases">
                   실제 생성 사례 <ArrowRight size={18} />
@@ -172,7 +179,7 @@ export default function App() {
               <div className="hero-results">
                 <a href="#cases" className="hero-result">
                   <img
-                    src="/images/examples/box-22.png"
+                    src="/images/examples/previews/box-22.webp"
                     width="1008"
                     height="1792"
                     alt="aiadcast가 생성한 크라프트 택배박스 홍보 이미지. 상품 규격과 설명 문구가 함께 구성되어 있습니다."
@@ -185,7 +192,7 @@ export default function App() {
                 </a>
                 <a href="#cases" className="hero-result">
                   <img
-                    src="/images/examples/bag-1.png"
+                    src="/images/examples/previews/bag-1.webp"
                     width="1008"
                     height="1792"
                     alt="aiadcast가 생성한 오렌지 쇼핑백 홍보 이미지. 제품 특징과 회사 정보가 함께 구성되어 있습니다."
@@ -361,9 +368,9 @@ export default function App() {
             </div>
             <div className="section-heading">
               <h2 id="cases-title">
-                결과로 확인하는
+                내 상품과 닮은 사례,
                 <br />
-                AI 콘텐츠 생성.
+                여기서 찾아보세요.
               </h2>
               <p>
                 박스부터 쇼핑백, 라벨과 용기까지.
@@ -374,6 +381,7 @@ export default function App() {
             <GeneratedShowcase />
           </div>
         </section>
+        <Applications />
         <section
           className="technology-section section-space"
           id="technology"
@@ -381,7 +389,7 @@ export default function App() {
         >
           <div className="wrap">
             <div className="section-eyebrow">
-              <span>03 — OUR TECHNOLOGY</span>
+              <span>04 — OUR TECHNOLOGY</span>
               <span>BUILT ON PRODUCT INTELLIGENCE</span>
             </div>
             <div className="section-heading">
@@ -493,7 +501,7 @@ export default function App() {
         >
           <div className="wrap">
             <div className="section-eyebrow">
-              <span>04 — ABOUT SELLUPLABS</span>
+              <span>05 — ABOUT SELLUPLABS</span>
               <span>FROM INDUSTRY TO TECHNOLOGY</span>
             </div>
             <div className="about-grid">
@@ -584,6 +592,7 @@ export default function App() {
             </div>
           </div>
         </section>
+        <AppInstall />
         <section
           className="contact-section"
           id="contact"
