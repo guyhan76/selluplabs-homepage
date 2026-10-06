@@ -1,0 +1,93 @@
+[
+  {
+    "file": "box-22.png",
+    "source": "box-examples/22.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "c6af3d4f525b6769021cdc84fdb3bb21716ba5c0e09ee201c9fec2b1ded5d6d3"
+  },
+  {
+    "file": "box-4.png",
+    "source": "box-examples/4.png",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "54c0712c686c0f1c4f87378793fe7167b2c813594a69fcbe1eebf26db0ae2e2a"
+  },
+  {
+    "file": "bag-1.png",
+    "source": "bag-examples/1.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "bd7395222a5d7b01955ba7584bb418f95e2e47e49afd188afe60a0fb4718efe7"
+  },
+  {
+    "file": "bag-10.png",
+    "source": "bag-examples/10.png",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "a2c69bce6ee58e2a1e6c2f029a699218ece24ac1bc7191797094f937e2866f6d"
+  },
+  {
+    "file": "label-1.png",
+    "source": "label-examples/1.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "8c29e36a87a035477594d1d2a12b69595c7247da4c050fd9d7d195cfd4f7950e"
+  },
+  {
+    "file": "label-11.png",
+    "source": "label-examples/11.png",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "fa4b6d789dba1ec31e04c196b339af7fb57f902d3108721ffff6bc6e9a9f8910"
+  },
+  {
+    "file": "pouch-5.png",
+    "source": "pouch-examples/5.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "b843dd70e9b55efab0f8b8aff5efdc7188e61078bd290548cb09abe8daac9bd3"
+  },
+  {
+    "file": "pouch-4.png",
+    "source": "pouch-examples/4.png",
+    "width": 605,
+    "height": 907,
+    "sha256": "8777e2c4d31770a55f16940eb32a618cdbfb37e17b3162191ae4d816f8aa77c0"
+  },
+  {
+    "file": "container-1.png",
+    "source": "container-examples/1.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "adc18377fd608a7eb4c461b61991cd0a79af0f3923208615b2d1ceff48b7b6f5"
+  },
+  {
+    "file": "container-5.png",
+    "source": "container-examples/5.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "8d4103acaad195b5ee7fb0dd5b6802b70464288a55dbde0c1857310ae2162e36"
+  },
+  {
+    "file": "container-10.png",
+    "source": "container-examples/10.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "457c5ac166c42086be205d262603fa5d540c57312216fbce112aa87f68b20127"
+  },
+  {
+    "file": "other-4.png",
+    "source": "other-examples/4.png",
+    "width": 1008,
+    "height": 1792,
+    "sha256": "d2cc6712d908d8b1b14a8062194346a0017245862fcba0c073db974b42461e70"
+  },
+  {
+    "file": "other-2.png",
+    "source": "other-examples/2.png",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "caafb6301ec0c2b6db6109755be3d0da699bd3883cf2126d927aff62206182c7"
+  }
+]
