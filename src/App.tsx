@@ -45,7 +45,7 @@ const faqs = [
 function Brand() {
   return (
     <span className="brand">
-      <img src="/favicon.svg" width="32" height="32" alt="" />
+      <img src="/favicon.svg?v=2" width="32" height="32" alt="" />
       <span>
         sell<span className="brand-up">up</span>labs
         <span className="brand-period">.</span>
