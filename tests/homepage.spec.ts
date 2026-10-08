@@ -161,10 +161,7 @@ test("gallery search, pagination, full expansion, and empty state work together"
   await gallery
     .getByRole("button", { name: "2:3 포스터", exact: true })
     .click();
-  await gallery
-    .getByRole("button", { name: "전체 9개 펼치기", exact: true })
-    .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(9);
+  await expect(page.getByTestId("generated-image")).toHaveCount(7);
   await gallery.getByRole("button", { name: "전체 비율", exact: true }).click();
   await gallery.getByRole("searchbox", { name: "상품 검색" }).fill("화장품");
   await expect(page.getByTestId("generated-image")).toHaveCount(3);

@@ -56,25 +56,25 @@
     "sha256": "8dc2f6550c96913e74d7189ca1d4da4edc890583612b3fbd1c9e93c9dda8999a"
   },
   {
-    "file": "box-8-20261008.png",
+    "file": "box-8-20261008-r2.png",
     "source": "박스이미지 1차.zip/8.png",
-    "width": 607,
-    "height": 907,
-    "sha256": "e7dcbcc5725c446ef24e1c3839baf975c3e009cdfcc50295919a893bf0a26090"
+    "width": 1008,
+    "height": 1792,
+    "sha256": "b50182010dfff08584423ed7aba45c8b75fa29d05f5914af2d859e7a305017a9"
   },
   {
-    "file": "box-9-20261008.png",
+    "file": "box-9-20261008-r2.png",
     "source": "박스이미지 1차.zip/9.png",
-    "width": 606,
-    "height": 908,
-    "sha256": "b443169699b6f31505e9ad34554697426ded5aa89e35c35bcb04d708bd5b0a22"
+    "width": 1008,
+    "height": 1792,
+    "sha256": "0c5ea24fa8bdeb1513a191e1485ab82851c5bf63ed7fe124ca05fa4c77c80e7b"
   },
   {
-    "file": "box-10-20261008.png",
+    "file": "box-10-20261008-r2.png",
     "source": "박스이미지 1차.zip/10.png",
-    "width": 510,
-    "height": 906,
-    "sha256": "da5600ce8fe1890098fd06cd9037e7d982e9fddbac33d8022af4c95bed88d3bf"
+    "width": 1008,
+    "height": 1792,
+    "sha256": "4ce06f66507c8b1e173863a63024e554a15ace1dabe60391ec5580b6b061b532"
   },
   {
     "file": "box-11-20261008.png",
