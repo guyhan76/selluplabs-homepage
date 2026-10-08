@@ -42,15 +42,15 @@ test("first screen explains the business and loads real product output without J
   expect(errors).toEqual([]);
 });
 
-test("all 72 supplied originals remain intact and all delivery previews are available", async ({
+test("all 71 supplied originals remain intact and all delivery previews are available", async ({
   request,
 }) => {
-  expect(allExamples).toHaveLength(72);
-  expect(new Set(allExamples.map((example) => example.id)).size).toBe(72);
+  expect(allExamples).toHaveLength(71);
+  expect(new Set(allExamples.map((example) => example.id)).size).toBe(71);
   const manifest = JSON.parse(
     await readFile("public/images/examples/provenance.json", "utf8"),
   );
-  expect(manifest).toHaveLength(72);
+  expect(manifest).toHaveLength(71);
   for (const example of allExamples) {
     const original = await readFile(`public${example.src}`);
     const record = manifest.find((item: { file: string }) =>
@@ -150,10 +150,10 @@ test("gallery search, pagination, full expansion, and empty state work together"
     .click();
   await expect(page.getByTestId("generated-image")).toHaveCount(20);
   await gallery
-    .getByRole("button", { name: "전체 72개 펼치기", exact: true })
+    .getByRole("button", { name: "전체 71개 펼치기", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(72);
-  await expect(gallery.getByRole("status")).toHaveText("72 / 72 CASES");
+  await expect(page.getByTestId("generated-image")).toHaveCount(71);
+  await expect(gallery.getByRole("status")).toHaveText("71 / 71 CASES");
   await gallery
     .getByRole("button", { name: "대표 사례만 보기", exact: true })
     .click();
@@ -162,12 +162,12 @@ test("gallery search, pagination, full expansion, and empty state work together"
     .getByRole("button", { name: "2:3 포스터", exact: true })
     .click();
   await gallery
-    .getByRole("button", { name: "전체 11개 펼치기", exact: true })
+    .getByRole("button", { name: "전체 9개 펼치기", exact: true })
     .click();
-  await expect(page.getByTestId("generated-image")).toHaveCount(11);
+  await expect(page.getByTestId("generated-image")).toHaveCount(9);
   await gallery.getByRole("button", { name: "전체 비율", exact: true }).click();
   await gallery.getByRole("searchbox", { name: "상품 검색" }).fill("화장품");
-  await expect(page.getByTestId("generated-image")).toHaveCount(4);
+  await expect(page.getByTestId("generated-image")).toHaveCount(3);
   await gallery.getByRole("searchbox", { name: "상품 검색" }).fill("유리 용기");
   await expect(page.getByTestId("generated-image")).toHaveCount(4);
   await gallery
@@ -535,9 +535,9 @@ test("English gallery, use cases, FAQ and app introduction are translated and fu
 }) => {
   await page.goto("/?lang=en");
   await page
-    .getByRole("button", { name: "Show all 72 examples", exact: true })
+    .getByRole("button", { name: "Show all 71 examples", exact: true })
     .click();
-  await expect(page.locator(".gallery-card")).toHaveCount(72);
+  await expect(page.locator(".gallery-card")).toHaveCount(71);
   expect(await page.locator(".gallery-grid").innerText()).not.toMatch(
     /[가-힣]/,
   );

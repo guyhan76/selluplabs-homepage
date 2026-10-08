@@ -224,7 +224,7 @@ export default function App() {
               <div className="hero-results">
                 <a href="#cases" className="hero-result">
                   <img
-                    src="/images/examples/previews/box-22.webp"
+                    src="/images/examples/previews/box-19-20261008.webp"
                     width="1008"
                     height="1792"
                     alt={t(

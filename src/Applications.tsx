@@ -121,7 +121,7 @@ const channelCopy = [
 const sampleCopy = [
   {
     label: "박스",
-    id: "box-22",
+    id: "box-19",
     poster: "box-4",
     headline: "안전하게 담고, 선명하게 전하다.",
     detail: "제품의 크기와 용도에 맞는 패키지",

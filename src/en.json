@@ -386,5 +386,9 @@
   "{title} 이미지 크게 보기": "Enlarge {title}",
   "{title} 실제 생성 이미지를 활용한 배치 예시": "Illustrative layout using an actual generated image: {title}",
   "{count}개 더 보기": "Show {count} more",
-  "전체 {count}개 펼치기": "Show all {count} examples"
+  "전체 {count}개 펼치기": "Show all {count} examples",
+  "프리미엄 향수 싸바리박스": "Premium perfume rigid box",
+  "크라프트 에코 박스": "Kraft eco box",
+  "블랙 프리미엄 싸바리박스": "Premium black rigid box",
+  "프리미엄 화장품 싸바리박스": "Premium cosmetics rigid box"
 }

@@ -94,7 +94,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         : "셀업랩스 | AI 마케팅 콘텐츠 기술 기업 · selluplabs";
     const description =
       language === "en"
-        ? "selluplabs develops AI services that combine product specifications and images to create marketing content. Explore aiadcast, our packaging-focused mobile service, and 72 real generated examples."
+        ? "selluplabs develops AI services that combine product specifications and images to create marketing content. Explore aiadcast, our packaging-focused mobile service, and 71 real generated examples."
         : "셀업랩스는 상품 규격과 이미지를 결합해 마케팅 콘텐츠를 자동 생성하는 AI 서비스를 개발·운영합니다. 포장재 특화 모바일 서비스 aiadcast와 실제 생성 사례를 만나보세요.";
     document
       .querySelector('meta[name="description"]')
