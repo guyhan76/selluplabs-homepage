@@ -655,3 +655,51 @@ test("English layout and language controls fit phones, tablets and desktop scree
     ).toBeVisible();
   }
 });
+
+test("hero story respects reduced motion and allows each step in both languages", async ({ page }) => {
+  const story = page.locator(".motion-story");
+  await story.scrollIntoViewIfNeeded();
+  await expect(story).toHaveAttribute("data-playing", "false");
+  await expect(story).toHaveAttribute("data-step", "2");
+  await expect(story.getByRole("button", { name: "자동 전환 일시정지" })).toHaveCount(0);
+  for (const label of ["상품 정보", "AI 콘텐츠 구성", "홍보 이미지 완성"]) {
+    const control = story.getByRole("button", { name: label });
+    await control.click();
+    await expect(control).toHaveAttribute("aria-pressed", "true");
+    await expect(story.locator(".story-description")).toBeVisible();
+  }
+  await page.getByRole("button", { name: "English", exact: true }).click();
+  await story.getByRole("button", { name: "AI composition" }).click();
+  expect(await story.innerText()).not.toMatch(/[가-힣]/);
+  await expect(story.getByRole("link", { name: "View actual generated examples" })).toHaveAttribute("href", "#cases");
+});
+
+test("hero automatic sequence can pause, resume and stops outside the viewport", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.clock.install();
+  await page.reload();
+  const story = page.locator(".motion-story");
+  await story.scrollIntoViewIfNeeded();
+  await expect(story).toHaveAttribute("data-playing", "true");
+  await expect(story).toHaveAttribute("data-step", "0");
+  await page.clock.fastForward(4900);
+  await expect(story).toHaveAttribute("data-step", "1");
+  await story.getByRole("button", { name: "자동 전환 일시정지" }).click();
+  await page.clock.fastForward(10000);
+  await expect(story).toHaveAttribute("data-step", "1");
+  await story.getByRole("button", { name: "홍보 이미지 완성" }).click();
+  await expect(story).toHaveAttribute("data-step", "2");
+  await page.clock.fastForward(10000);
+  await expect(story).toHaveAttribute("data-step", "2");
+  await story.getByRole("button", { name: "자동 전환 재생" }).click();
+  await page.clock.fastForward(4900);
+  await expect(story).toHaveAttribute("data-step", "0");
+  await page.locator("#about").scrollIntoViewIfNeeded();
+  await expect(story).toHaveAttribute("data-playing", "false");
+  await page.clock.fastForward(10000);
+  await expect(story).toHaveAttribute("data-step", "0");
+  await story.scrollIntoViewIfNeeded();
+  await expect(story).toHaveAttribute("data-playing", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(story).toHaveAttribute("data-playing", "false");
+});
