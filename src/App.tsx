@@ -1,11 +1,10 @@
-import { HeroStory } from "./HeroStory";
-import { useScrollReveal } from "./Motion";
 import { useI18n } from "./i18n";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowRight,
   ArrowUpRight,
+  Check,
   Mail,
   Menu,
   Plus,
@@ -65,7 +64,6 @@ function AiadcastMark({ className = "" }: { className?: string }) {
   );
 }
 export default function App() {
-  useScrollReveal();
   const { t, language, setLanguage, localize } = useI18n();
   const navigation = localize(navigationCopy);
   const faqs = localize(faqCopy);
@@ -213,7 +211,55 @@ export default function App() {
                 {t(" 포장재 특화 AI · 모바일 서비스")}
               </div>
             </div>
-            <HeroStory />
+            <div
+              className="hero-product"
+              aria-label={t("aiadcast 실제 마케팅 콘텐츠 생성 결과")}
+            >
+              <div className="product-window-top">
+                <AiadcastMark />
+                <span>
+                  GENERATED CONTENTS <span className="status-dot" />
+                </span>
+              </div>
+              <div className="hero-results">
+                <a href="#cases" className="hero-result">
+                  <img
+                    src="/images/examples/previews/box-19-20261008.webp"
+                    width="1008"
+                    height="1792"
+                    alt={t(
+                      "aiadcast가 생성한 크라프트 택배박스 홍보 이미지. 상품 규격과 설명 문구가 함께 구성되어 있습니다.",
+                    )}
+                    fetchPriority="high"
+                  />
+                  <div>
+                    <span>{t("택배박스")}</span>
+                    <span>9:16</span>
+                  </div>
+                </a>
+                <a href="#cases" className="hero-result">
+                  <img
+                    src="/images/examples/previews/bag-1.webp"
+                    width="1008"
+                    height="1792"
+                    alt={t(
+                      "aiadcast가 생성한 오렌지 쇼핑백 홍보 이미지. 제품 특징과 회사 정보가 함께 구성되어 있습니다.",
+                    )}
+                  />
+                  <div>
+                    <span>{t("쇼핑백")}</span>
+                    <span>9:16</span>
+                  </div>
+                </a>
+              </div>
+              <div className="product-window-bottom">
+                <span>
+                  <Check size={13} />
+                  {t(" 실제 앱 생성 결과")}
+                </span>
+                <span>PRODUCT DATA → MARKETING CONTENT</span>
+              </div>
+            </div>
           </div>
           <div className="hero-base wrap">
             <a href="#service" className="scroll-link">
