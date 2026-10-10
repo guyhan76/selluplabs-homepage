@@ -31,3 +31,8 @@
   Content-Type: application/vnd.android.package-archive
   Content-Disposition: attachment; filename="aiadcast-0.2.5-dev.apk"
   Cache-Control: public, max-age=3600
+
+/aiadcast-test/aiadcast-0.2.6-dev.apk
+  Content-Type: application/vnd.android.package-archive
+  Content-Disposition: attachment; filename="aiadcast-0.2.6-dev.apk"
+  Cache-Control: public, max-age=3600
