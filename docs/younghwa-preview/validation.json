@@ -1,0 +1,36 @@
+[
+  {
+    "viewport": "desktop",
+    "cases": 30,
+    "assets": 60,
+    "filters": true,
+    "modalNavigation": true,
+    "enquiryPrefill": true,
+    "bilingual": true,
+    "overflowWidths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "accessibilityViolations": 0,
+    "pageErrors": 0
+  },
+  {
+    "viewport": "mobile",
+    "cases": 30,
+    "assets": 60,
+    "filters": true,
+    "modalNavigation": true,
+    "enquiryPrefill": true,
+    "bilingual": true,
+    "overflowWidths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "accessibilityViolations": 0,
+    "pageErrors": 0
+  }
+]
