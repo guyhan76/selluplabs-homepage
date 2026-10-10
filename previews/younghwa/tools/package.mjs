@@ -9,6 +9,7 @@ const assets={};for(const name of await fs.readdir(path.join(site,'assets'))){if
 let app=await fs.readFile(path.join(site,'app.js'),'utf8');
 app=app.replace('`assets/${id.toLowerCase()}${thumb?\'-thumb\':\'\'}.webp`','window.YOUNGHWA_ASSETS[`assets/${id.toLowerCase()}${thumb?\'-thumb\':\'\'}.webp`]');
 app=app.replaceAll('src="assets/younghwa-logo.png"',`src="${assets['assets/younghwa-logo.png']}"`);
+app=app.replaceAll('src="favicon.svg"',`src="data:image/svg+xml;base64,${(await fs.readFile(path.join(site,'favicon.svg'))).toString('base64')}"`);
 const css=await fs.readFile(path.join(site,'styles.css'),'utf8');
 const data=await fs.readFile(path.join(site,'cases.js'),'utf8');
 let html=await fs.readFile(path.join(site,'index.html'),'utf8');

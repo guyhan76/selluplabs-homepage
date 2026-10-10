@@ -1,0 +1,18 @@
+{
+  "newTabDestination": "https://www.boxboy.co.kr/",
+  "destinationStubbed": true,
+  "liveShopAvailabilityChecked": false,
+  "languages": [
+    "ko",
+    "en"
+  ],
+  "widths": [
+    320,
+    390,
+    800,
+    900,
+    1000,
+    1440
+  ],
+  "pageErrors": []
+}
