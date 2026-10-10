@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-younghwa/
 .env
 .env.*
 !.env.example

@@ -1,5 +1,7 @@
 # 영화패키지 무료 공개 경로
 
+> 2026-10-10: 사용자가 독립 프로젝트 배포를 선택했다. 새 배포 설정은 [YOUNGHWA-PAGES.md](YOUNGHWA-PAGES.md)를 따른다. 아래 주소는 전환 전 기존 공개 경로이며, 새 프로젝트 공개 확인 후 이전한다.
+
 사용자는 2026-10-10 농산물 제작 사례 20장을 추가하고 무료 웹 주소로 공개하도록 요청했다. 기존 Cloudflare Workers와 GitHub main 자동 배포 연결을 사용한다.
 
 - 공개 대상 경로: https://selluplabs-homepage.selluplabs.workers.dev/younghwa/
