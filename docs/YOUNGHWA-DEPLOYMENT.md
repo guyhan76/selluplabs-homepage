@@ -7,7 +7,7 @@
 - 공개 대상 경로: https://selluplabs-homepage.selluplabs.workers.dev/younghwa/
 - 운영 소스: `public/younghwa/`. 기존 셀업랩스 루트 페이지 소스는 변경하지 않는다.
 - 이미지: 프리미엄 15 + 농산물·식품 20 + 골판지 15 = 50장. 원본/목록용 WebP 100개와 회사 로고.
-- 문의: 1644-1410, lis000@hanmail.net. 박스보이 기성박스 쇼핑몰 https://www.boxboy.co.kr 에 새 창으로 연결한다.
+- 문의: 1644-1410, lis000@hanmail.net. 박스보이 기성박스 쇼핑몰 http://www.boxboy.co.kr/ 에 새 창으로 연결한다.
 - 수정 후 `npm run build` → `dist/younghwa/`에 반영. `main` push가 기존 Cloudflare 자동 배포의 입력이다.
 - 배포 확인은 Cloudflare 해당 프로젝트의 Deployments에서 커밋과 성공 상태를 확인하고 위 경로를 연다. 이 실행 환경은 workers.dev 도메인 직접 접속이 프록시에서 차단되어 원격 HTTP 성공을 검증할 수 없다. GitHub push 성공과 공개 서버 반영 완료를 구분한다.
 
