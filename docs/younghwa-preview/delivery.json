@@ -1,8 +1,8 @@
 {
-  "sha256": "2aa519a7228465534e7246c3ba48a3f7c895f7137e450f8538d49286645e2507",
-  "bytes": 6554268,
-  "includedCases": 30,
-  "pendingProduceCases": 20,
+  "sha256": "99af3629b2e701a3530f04f0df8b62cec426d466033a70ee0b2345229ffdd508",
+  "bytes": 12334561,
+  "includedCases": 50,
+  "pendingProduceCases": 0,
   "productionDeployed": false,
   "boxboyShopLink": "https://www.boxboy.co.kr"
 }

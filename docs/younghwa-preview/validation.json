@@ -1,8 +1,8 @@
 [
   {
     "viewport": "desktop",
-    "cases": 30,
-    "assets": 60,
+    "cases": 50,
+    "assets": 100,
     "filters": true,
     "modalNavigation": true,
     "enquiryPrefill": true,
@@ -18,8 +18,8 @@
   },
   {
     "viewport": "mobile",
-    "cases": 30,
-    "assets": 60,
+    "cases": 50,
+    "assets": 100,
     "filters": true,
     "modalNavigation": true,
     "enquiryPrefill": true,

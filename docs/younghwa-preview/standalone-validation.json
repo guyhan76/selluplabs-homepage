@@ -1,8 +1,7 @@
 {
-  "embeddedAssetCount": 61,
-  "offlineGalleryCases": 30,
+  "embeddedAssetCount": 101,
+  "offlineGalleryCases": 50,
+  "offlineProduceCases": 20,
   "offlineModal": true,
-  "englishMobileOverflow": false,
-  "pageErrors": [],
-  "delivery": "Self-contained HTML; loaded over local HTTP, then network disabled. file:// is blocked by the managed test browser policy."
+  "pageErrors": []
 }

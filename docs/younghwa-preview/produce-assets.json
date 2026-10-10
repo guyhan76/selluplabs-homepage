@@ -1,0 +1,142 @@
+[
+  {
+    "source": "01_YOUNGHWA_Potato.png",
+    "id": "01_younghwa_potato",
+    "width": 941,
+    "height": 1672,
+    "sha256": "697ef9170fcc0ca94465e73bea4fde4f4ee9091d697ee74fc54b3724bb5a0b85"
+  },
+  {
+    "source": "02_YOUNGHWA_Sweet_Potato.png",
+    "id": "02_younghwa_sweet_potato",
+    "width": 941,
+    "height": 1672,
+    "sha256": "32763b3739a9c964180d76032f525507fd3a3c965f2086ac2e2ce04ad5d47f98"
+  },
+  {
+    "source": "03_YOUNGHWA_Tomato.png",
+    "id": "03_younghwa_tomato",
+    "width": 941,
+    "height": 1672,
+    "sha256": "2f019bb6ee517c2e02487f5e827afe48f1dfae2c4cf3f85ec0ea16bae56bc46f"
+  },
+  {
+    "source": "04_YOUNGHWA_Cherry.png",
+    "id": "04_younghwa_cherry",
+    "width": 941,
+    "height": 1672,
+    "sha256": "8a310a12bd0db94cc527cab8d26a8b2cbfd7c3d66d084650dee045dafd4480d5"
+  },
+  {
+    "source": "05_YOUNGHWA_Blueberry.png",
+    "id": "05_younghwa_blueberry",
+    "width": 941,
+    "height": 1672,
+    "sha256": "7e0112a019f0854a426d18f207fa4f962183396f6393fa8793d6cde6eaccd533"
+  },
+  {
+    "source": "06_YOUNGHWA_Banana.png",
+    "id": "06_younghwa_banana",
+    "width": 941,
+    "height": 1672,
+    "sha256": "b0b06490d0fcf6e9ee5d415f0178af046733ba20a7dc358f562db20a054e29d5"
+  },
+  {
+    "source": "07_YOUNGHWA_Watermelon.png",
+    "id": "07_younghwa_watermelon",
+    "width": 941,
+    "height": 1672,
+    "sha256": "d85acfde2ef22a954e5ac45d0a56d0fefdda6f8adbdbf256b0f882e3b73617ef"
+  },
+  {
+    "source": "08_YOUNGHWA_Korean_Melon.png",
+    "id": "08_younghwa_korean_melon",
+    "width": 941,
+    "height": 1672,
+    "sha256": "84f9863883dbb92212db145c8d771a7f1c33589f61e12e2b895c502039c959fc"
+  },
+  {
+    "source": "09_YOUNGHWA_Mandarin.png",
+    "id": "09_younghwa_mandarin",
+    "width": 941,
+    "height": 1672,
+    "sha256": "2af86186be8146e1222f282f8dd4f23bb4ab6d7fac4565be56e3623ba359d787"
+  },
+  {
+    "source": "10_YOUNGHWA_Apple.png",
+    "id": "10_younghwa_apple",
+    "width": 940,
+    "height": 1672,
+    "sha256": "f2189a57d2e0098b89ee9a3b8a476bf3c7292002d434db24ea70f6305e3132cb"
+  },
+  {
+    "source": "11_YOUNGHWA_Pear.png",
+    "id": "11_younghwa_pear",
+    "width": 941,
+    "height": 1672,
+    "sha256": "63c7df92c6af66aac65b541b71e43d613ac9219504e1b6e104d5bac8e6125c36"
+  },
+  {
+    "source": "12_YOUNGHWA_Dried_Persimmon.png",
+    "id": "12_younghwa_dried_persimmon",
+    "width": 940,
+    "height": 1672,
+    "sha256": "7c3dae5bd2490317e2d73bd1c28eaa2951107a0e3e9cd85e976fe6216b7826cb"
+  },
+  {
+    "source": "13_YOUNGHWA_Red_Ginseng.png",
+    "id": "13_younghwa_red_ginseng",
+    "width": 941,
+    "height": 1672,
+    "sha256": "8730f775020846741a2699ec5e2c7e30a550f6951e6b6f6468c9818a33711073"
+  },
+  {
+    "source": "14_YOUNGHWA_Green_Onion.png",
+    "id": "14_younghwa_green_onion",
+    "width": 941,
+    "height": 1672,
+    "sha256": "fc46adb9e368b79ed4497ee3e8f823eab9a027a5c52ba6c99294c0ef99ad38d1"
+  },
+  {
+    "source": "15_YOUNGHWA_Onion.png",
+    "id": "15_younghwa_onion",
+    "width": 941,
+    "height": 1672,
+    "sha256": "630f8b755b16c004f06e76ae8c64cdafdc7812e172655c091c088d754921061e"
+  },
+  {
+    "source": "16_YOUNGHWA_Cucumber.png",
+    "id": "16_younghwa_cucumber",
+    "width": 941,
+    "height": 1672,
+    "sha256": "17da1e95691677aedc0e00941f4afdaa7bab722595793d09ad7e5f9e9c79f908"
+  },
+  {
+    "source": "17_YOUNGHWA_Grape.png",
+    "id": "17_younghwa_grape",
+    "width": 941,
+    "height": 1672,
+    "sha256": "49568b449a99322bfed324006685fb8b2a0ac2f89b25a62d21a3059d008029ec"
+  },
+  {
+    "source": "18_YOUNGHWA_Shine_Muscat.png",
+    "id": "18_younghwa_shine_muscat",
+    "width": 941,
+    "height": 1672,
+    "sha256": "aaa8dbb887e826c450b182b74a6a37370ec5c8ecaacae8bd09bc5237a7be0313"
+  },
+  {
+    "source": "19_YOUNGHWA_Jujube.png",
+    "id": "19_younghwa_jujube",
+    "width": 941,
+    "height": 1672,
+    "sha256": "31ac9fce982df403bcdbee0923a0f4f895e765de6f557c8dd376daf82525b09f"
+  },
+  {
+    "source": "20_YOUNGHWA_Chestnut.png",
+    "id": "20_younghwa_chestnut",
+    "width": 941,
+    "height": 1672,
+    "sha256": "a89ebee82400111030e8437c0113225e5318db4a4fd989bc26993cfdbc4198c2"
+  }
+]
