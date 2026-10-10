@@ -1,1 +1,1 @@
-83d616b3b38cdea27b0386d8f6207ed0ef94b45b5c58847bf1cb568616a6fcce  aiadcast-0.2.4-dev.apk
+238e6df5f4c8f6a806ccdd75e4dcc5c69ee5ecc1541c49189e1b6b84b91883d9  aiadcast-0.2.5-dev.apk
