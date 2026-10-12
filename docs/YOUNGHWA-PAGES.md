@@ -37,3 +37,9 @@
 전용 도메인을 구입하면 Pages의 Custom domains에서 연결하고 `YOUNGHWA_SITE_URL`을 그 주소로 변경한 뒤 재배포한다. 기존 `www.boxboy.co.kr` 쇼핑몰은 계속 별도로 연결한다.
 
 로컬 확인: `YOUNGHWA_SITE_URL=https://younghwa-package.pages.dev node scripts/build-younghwa.mjs`. 이 명령은 빌드만 실행하며 Cloudflare에 업로드하지 않는다. 무료 플랜의 저장·전송·빌드 사용 한도는 Cloudflare 계정에서 확인한다.
+
+## 검색결과 사이트 이름 — 2026-10-12
+
+- 사용자가 `https://younghwa-package.pages.dev/`의 공개 화면과 Google 색인 완료 화면을 확인했다. 검색결과 사이트 이름이 Cloudflare로 표시되어, `og:site_name`과 `WebSite` JSON-LD에 영화패키지 이름을 명시했다.
+- `WebSite.url`은 독립 빌드에서 `YOUNGHWA_SITE_URL`의 루트 주소로 변환된다. canonical·Open Graph·Organization 주소와 동일한 홈페이지를 가리켜야 한다.
+- 실제 Google의 사이트 이름 선택과 갱신 시점은 보장하지 않는다. 이 변경은 사이트맵 가져오기 오류의 원인을 확인하거나 해결한 것이 아니다. GitHub 반영과 공개 서버 배포 완료도 구분한다.
