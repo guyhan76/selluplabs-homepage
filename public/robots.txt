@@ -1,3 +1,4 @@
 User-agent: *
 Disallow:
-Sitemap: https://selluplabs-homepage.selluplabs.workers.dev/younghwa/sitemap.xml
+
+Sitemap: https://www.selluplabs.com/sitemap.xml

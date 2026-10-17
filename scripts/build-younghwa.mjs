@@ -15,7 +15,7 @@ if (site.protocol !== 'https:' || site.pathname !== '/' || site.search || site.h
   throw new Error('YOUNGHWA_SITE_URL must be an HTTPS origin without a path, query, port or credentials.');
 }
 const base = `${site.origin}/`;
-const previousBase = 'https://selluplabs-homepage.selluplabs.workers.dev/younghwa/';
+const previousBase = 'https://www.selluplabs.com/younghwa/';
 // Validate inputs before replacing the generated directory.
 const originalHtml = await readFile(path.join(source, 'index.html'), 'utf8');
 if (!originalHtml.includes(previousBase)) throw new Error('Review the source canonical URL before building.');

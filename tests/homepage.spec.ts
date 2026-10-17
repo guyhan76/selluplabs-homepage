@@ -513,7 +513,7 @@ test("language choice has shareable URLs, persistence, explicit overrides and br
   );
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute(
     "href",
-    "https://selluplabs-homepage.selluplabs.workers.dev/?lang=en",
+    "https://www.selluplabs.com/?lang=en",
   );
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");

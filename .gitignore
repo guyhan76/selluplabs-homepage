@@ -9,3 +9,5 @@ dist-younghwa/
 *.log
 test-results/
 playwright-report/
+
+.wrangler/

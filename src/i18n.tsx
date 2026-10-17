@@ -4,7 +4,7 @@ import englishCopy from "./en.json";
 
 export type Language = "ko" | "en";
 const storageKey = "selluplabs-language";
-const origin = "https://selluplabs-homepage.selluplabs.workers.dev/";
+const origin = "https://www.selluplabs.com/";
 const dictionary: Record<string, string> = englishCopy;
 type Values = Record<string, string | number>;
 
@@ -82,6 +82,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
   useEffect(() => {
+    // Keep a restored preference shareable and consistent with server metadata.
+    const url = new URL(window.location.href);
+    if (language === "en" && url.searchParams.get("lang") !== "en") {
+      url.searchParams.set("lang", "en");
+      window.history.replaceState(window.history.state, "", url);
+    }
     document.documentElement.lang = language;
     try {
       localStorage.setItem(storageKey, language);
@@ -116,6 +122,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           ? "selluplabs — AI marketing content from product data, with actual aiadcast outputs"
           : "셀업랩스 — 상품 정보로 만드는 AI 마케팅 콘텐츠와 aiadcast 실제 생성 결과",
       );
+    document
+      .querySelector('meta[property="og:locale:alternate"]')
+      ?.setAttribute("content", language === "en" ? "ko_KR" : "en_US");
     const pageUrl = origin + (language === "en" ? "?lang=en" : "");
     document
       .querySelector('link[rel="canonical"]')

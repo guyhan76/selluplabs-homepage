@@ -2,11 +2,11 @@
 
 셀업랩스의 회사 소개 및 포장재 특화 AI 마케팅 서비스 **aiadcast**를 소개하는 반응형 홈페이지입니다. React, TypeScript, Vite를 사용하며 정적 웹 호스팅에 배포할 수 있습니다.
 
-공개 주소: https://selluplabs-homepage.selluplabs.workers.dev/
+공개 주소: https://www.selluplabs.com/
 
-한국어 링크: https://selluplabs-homepage.selluplabs.workers.dev/?lang=ko
+한국어 링크: https://www.selluplabs.com/?lang=ko
 
-영어 링크: https://selluplabs-homepage.selluplabs.workers.dev/?lang=en
+영어 링크: https://www.selluplabs.com/?lang=en
 
 상단의 KO / EN 버튼으로 본문, 사례 정보, 활용 예시와 문의창의 언어를 전환합니다. URL의 `lang` 값이 우선하며, 지정하지 않으면 브라우저에 저장한 언어 설정을 사용합니다. 문의창에 입력한 내용과 선택한 사례·활용 채널은 언어를 바꿔도 유지합니다. 실제 앱 생성 이미지와 앱 화면은 제공된 원본 언어로 표시합니다.
 
@@ -103,3 +103,13 @@ PC·모바일 총 36개 테스트로 검증합니다. 검증 항목은 첫 화�
 도메인을 변경할 때는 `index.html`의 canonical, `og:url`, `og:image` 주소도 함께 변경하세요. 소셜 공유 이미지는 `public/images/social-preview.png`입니다.
 
 Codex 환경의 **저장 및 게시**는 개발 환경을 재사용하기 위한 기능입니다. 회사 홈페이지를 일반 방문자에게 공개하는 웹 배포와는 별도입니다.
+
+## 대표 주소와 검색 설정
+
+대표 주소는 `https://www.selluplabs.com/`입니다. 한국어 canonical과 ko/x-default는 `/`, 영어 canonical과 en은 `/?lang=en`입니다. `/?lang=ko`는 기존 공유 링크로 유지하되 canonical은 `/`를 가리킵니다. 저장된 영어 설정을 복원하면 URL도 `?lang=en`으로 맞춥니다.
+
+`worker/index.js`가 HTTP 및 apex 요청을 경로·쿼리를 보존하는 308로 대표 HTTPS 주소에 보냅니다. 임시 workers.dev 주소도 대표 주소로 이동합니다. `wrangler.jsonc`는 기존 `selluplabs-homepage` Worker와 `dist/` 정적 파일을 사용하며 도메인·DNS·라우트 설정은 대시보드의 기존 설정을 유지합니다. `main` push → 기존 Workers Builds 자동 배포 방식을 유지합니다. Pages로 전환하지 않습니다.
+
+영어 요청은 Worker가 초기 HTML 메타데이터를 영어로 변환하므로 JavaScript를 실행하지 않는 공유 봇도 영어 canonical/title/description을 받습니다. `/sitemap.xml`에는 한국어·영어 홈페이지와 기존 `/younghwa/`가 포함됩니다. 다운로드 자료의 기존 noindex 헤더와 파일은 유지합니다.
+
+검증: `npm run build`, `node --test tests/worker-routing.mjs`, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test`. 로컬 Worker 확인은 `npx wrangler dev --local`을 사용합니다. 운영 배포 후 HTTP/HTTPS × apex/www, 언어 메타데이터, robots/sitemap MIME 타입, 영화패키지와 다운로드를 다시 확인해야 합니다. Google/Naver 소유 확인·사이트맵 제출과 색인 반영은 별도입니다.
