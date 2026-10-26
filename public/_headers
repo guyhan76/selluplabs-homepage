@@ -104,3 +104,7 @@
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
+
+/motion-preview/*
+  X-Robots-Tag: noindex, nofollow
+  X-Content-Type-Options: nosniff
