@@ -1,0 +1,60 @@
+name: Verify published policy pages
+on:
+  push:
+    branches: [verify/public-policy-pages-20261114]
+permissions: {}
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify public pages and homepage links
+        shell: python
+        run: |
+          from html.parser import HTMLParser
+          from urllib.request import urlopen
+          from time import sleep
+          class Page(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = set()
+                  self.headings = []
+                  self.in_heading = False
+                  self.canonical = None
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag == 'h1':
+                      self.in_heading = True
+                  if tag == 'a':
+                      self.links.add(a.get('href'))
+                  if tag == 'link' and a.get('rel') == 'canonical':
+                      self.canonical = a.get('href')
+              def handle_endtag(self, tag):
+                  if tag == 'h1':
+                      self.in_heading = False
+              def handle_data(self, data):
+                  if self.in_heading:
+                      self.headings.append(data)
+          origin = 'https://www.selluplabs.com'
+          def fetch(path):
+              with urlopen(origin + path, timeout=12) as r:
+                  assert r.status == 200
+                  assert r.headers.get_content_type() == 'text/html'
+                  page = Page()
+                  page.feed(r.read().decode('utf-8'))
+                  return page
+          for attempt in range(3):
+              try:
+                  for path, heading in [('/privacy/', '개인정보처리방침'), ('/terms/', '서비스 이용약관')]:
+                      page = fetch(path)
+                      assert heading in page.headings, (path, page.headings)
+                      assert page.canonical == origin + path
+                      assert 'mailto:selluplabs@gmail.com' in page.links
+                      print(path, 200, heading, 'developer contact present')
+                  assert {'/privacy/', '/terms/'} <= fetch('/').links
+                  print('Both policies linked from the public homepage')
+                  break
+              except Exception:
+                  if attempt == 2:
+                      raise
+                  sleep(5)
