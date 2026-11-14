@@ -246,3 +246,13 @@ html[lang="en"] .technology-evidence h3 {
     font-size: 33px;
   }
 }
+
+.footer-policy-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem 1rem;
+  font-size: .85rem;
+}
+.footer-policy-links a { text-decoration: underline; text-underline-offset: .2em; }
+.footer-policy-links a:first-child { font-weight: 700; }

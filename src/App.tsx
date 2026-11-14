@@ -738,6 +738,10 @@ export default function App() {
               <a href={company.phoneHref}>{company.phone}</a>
               <a href={`mailto:${company.email}`}>{company.email}</a>
             </div>
+            <nav className="footer-policy-links" aria-label={t("서비스 정책")}>
+              <a href="/privacy/">{t("개인정보처리방침")}</a>
+              <a href="/terms/">{t("서비스 이용약관")}</a>
+            </nav>
             <span className="copyright">
               © {new Date().getFullYear()} selluplabs. All rights reserved.
             </span>
